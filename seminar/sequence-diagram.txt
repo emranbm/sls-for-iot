@@ -1,0 +1,20 @@
+@startuml
+actor user
+participant "Agent 1" as a1
+participant "Agent 2" as a2
+participant "Service Discovery Agent" as sd
+participant "Authentication Service" as auth
+user -> a1 : set credentials
+a1 -> sd : Get auth service
+sd -> a1 : Auth service address
+a1 -> auth : credentials
+auth -> a1 : token
+a1 -> sd : get available hosts
+sd -> a1 : a1, a2, a3, ...
+a1 -> a2 : request save(token, key, size)
+a2 -> a1 : accept
+a1 -> a2 : data
+a1 -> a2 : read key
+a2 -> a1 : data
+@enduml
+
