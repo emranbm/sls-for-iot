@@ -1,0 +1,6 @@
+*.wgt
+.project
+.settings
+.sign
+.tproject
+
