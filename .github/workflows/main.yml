@@ -12,7 +12,7 @@ jobs:
       options: '--entrypoint ""'
     steps:
       - uses: actions/checkout@v2
-      - run: java -jar plantuml.jar seminar/sequence-diagram.txt
+      - run: java -jar /plantuml.jar seminar/sequence-diagram.txt
       - uses: actions/upload-artifact@v2
         with:
           name: Sequence Diagram
