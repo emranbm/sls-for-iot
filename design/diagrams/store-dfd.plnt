@@ -1,5 +1,5 @@
 @startuml
-title Store data
+title Store data DFD
 rectangle "SmartWatch" as watch
 rectangle "SmartPhone" as phone
 watch -right-> phone : (1) request store (key, size)

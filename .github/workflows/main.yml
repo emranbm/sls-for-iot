@@ -15,5 +15,5 @@ jobs:
       - run: java -jar /plantuml.jar design/diagrams/*.plnt
       - uses: actions/upload-artifact@v2
         with:
-          name: Sequence Diagram
+          name: Diagrams
           path: design/diagrams/*.png
