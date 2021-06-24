@@ -1,0 +1,13 @@
+@startuml
+title Store data
+rectangle "SmartWatch" as watch
+rectangle "SmartPhone" as phone
+watch -right-> phone : (1) request store (key, size)
+phone .left.> watch : (2) accept
+watch -right-> phone : (3) key/value pair
+database "local storage" as watchdb
+database "local storage" as phonedb
+watch <-down-> watchdb
+phone <-down-> phonedb
+@enduml
+
