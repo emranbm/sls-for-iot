@@ -6,3 +6,17 @@ services:
       - 1883:1883
       - 9001:9001
     command: 'mosquitto -c /mosquitto-no-auth.conf'
+    networks:
+      sls_net:
+  sls-manager:
+    build: ./sls-manager
+    environment:
+      - BROKER_URL=mqtt://broker:1883
+    depends_on:
+      - broker
+    networks:
+      sls_net:
+
+networks:
+  sls_net:
+    driver: bridge
