@@ -1,0 +1,15 @@
+@startuml
+title "Usecase Diagram"
+left to right direction
+actor User
+package "SLS system" {
+  usecase "Save file" as save
+  usecase "Read file" as read
+  usecase "Delete file" as delete
+  usecase "Check file info" as check
+}
+User --> save
+User --> read
+User --> delete
+User --> check
+@enduml
