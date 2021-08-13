@@ -1,5 +1,5 @@
 {
-  "name": "js-client",
+  "name": "sls-client",
   "version": "0.1.0",
   "description": "",
   "main": "main.js",
@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/emranbm/ms-project#readme",
   "dependencies": {
+    "@types/node": "^16.6.1",
     "async-mqtt": "^2.6.1"
   }
 }

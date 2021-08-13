@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "emitDecoratorMetadata": false,
+        "module": "commonjs",
+        "target": "ES5",
+        "outDir": "build",
+        "rootDir": "src",
+        "resolveJsonModule": true
+    }
+}
