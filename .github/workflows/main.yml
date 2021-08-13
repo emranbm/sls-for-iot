@@ -22,4 +22,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - working-directory: simulation/
+        run: cp -rf sls-types/ sls-manager/
+      - working-directory: simulation/
         run: docker-compose build

@@ -1,0 +1,24 @@
+{
+  "name": "sls-types",
+  "version": "0.1.0",
+  "description": "Type deffinitions of the Shared Local Storage",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emranbm/SahaBee.git"
+  },
+  "keywords": [
+    "sls",
+    "sls-types"
+  ],
+  "author": "Emran Batmangheich",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/emranbm/SahaBee/issues"
+  },
+  "homepage": "https://github.com/emranbm/SahaBee#readme",
+  "types": "index.d.ts"
+}
