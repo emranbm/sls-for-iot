@@ -1,7 +1,7 @@
 import { Client } from "./Client"
-import { IClientRepostory } from "./IClientRepository"
+import { IClientRepository } from "./IClientRepository"
 
-export class InMemoryClientRepo implements IClientRepostory {
+export class InMemoryClientRepo implements IClientRepository {
     private repo: Map<string, Client> = new Map()
 
     addOrUpdateClient(client: Client): void {
@@ -13,5 +13,7 @@ export class InMemoryClientRepo implements IClientRepostory {
     removeClient(id: string): boolean {
         return this.repo.delete(id)
     }
-
+    getClients(): Iterable<Client> {
+        return this.repo.values()
+    }
 }

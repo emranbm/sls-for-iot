@@ -1,5 +1,1 @@
-type HeartBeatMsg = {
-    clientId: string,
-    freeBytes: number,
-    totalBytes: number,
-}
+type HeartBeatMsg = ClientInfoMsg

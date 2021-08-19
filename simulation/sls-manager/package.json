@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node_modules/typescript/bin/tsc"
+    "build": "node_modules/typescript/bin/tsc",
+    "start": "npm run build && node build/main.js"
   },
   "repository": {
     "type": "git",
