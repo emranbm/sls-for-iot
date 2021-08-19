@@ -4,7 +4,9 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node_modules/typescript/bin/tsc",
+    "start": "npm run build && node build/main.js"
   },
   "repository": {
     "type": "git",
@@ -22,6 +24,12 @@
   "homepage": "https://github.com/emranbm/ms-project#readme",
   "dependencies": {
     "@types/node": "^16.6.1",
-    "async-mqtt": "^2.6.1"
+    "async-mqtt": "^2.6.1",
+    "diskusage": "^1.1.3"
+  },
+  "devDependencies": {
+    "@types/node": "^16.6.0",
+    "@types/sls-types": "file:../sls-types",
+    "typescript": "^4.3.5"
   }
 }

@@ -1,0 +1,4 @@
+{
+    "brokerUrl": "mqtt://localhost:1883",
+    "heartBeatInterval": 10000
+}

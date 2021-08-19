@@ -1,4 +1,4 @@
-class Client {
+export class Client {
     id: string;
     freeBytes?: number;
     totalBytes?: number;

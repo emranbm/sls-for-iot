@@ -1,15 +1,17 @@
 import * as MQTT from "async-mqtt";
+import { Client } from "./clientRepo/Client";
+import { ClientRepoProvider } from "./clientRepo/ClientRepoProvider";
 import * as config from "./config.json"
 
 const TOPIC_HEART_BEAT = "sls/manager/heart-bit"
 
 async function main() {
     console.log(`Connecting to broker at: ${config.brokerUrl}`)
-    const client = await MQTT.connectAsync(config.brokerUrl)
+    const mqttClient = await MQTT.connectAsync(config.brokerUrl)
 
-    await client.subscribe(TOPIC_HEART_BEAT)
+    await mqttClient.subscribe(TOPIC_HEART_BEAT)
 
-    client.on("message", onMessage)
+    mqttClient.on("message", onMessage)
 }
 
 function onMessage(topic: string, message: Buffer) {

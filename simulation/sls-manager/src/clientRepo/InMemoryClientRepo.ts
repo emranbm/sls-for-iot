@@ -1,4 +1,7 @@
-class InMemoryClientRepo implements IClientRepostory {
+import { Client } from "./Client"
+import { IClientRepostory } from "./IClientRepository"
+
+export class InMemoryClientRepo implements IClientRepostory {
     private repo: Map<string, Client> = new Map()
 
     addOrUpdateClient(client: Client): void {

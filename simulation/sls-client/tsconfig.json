@@ -5,6 +5,7 @@
         "target": "ES5",
         "outDir": "build",
         "rootDir": "src",
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
+        "types": ["node", "sls-types"]
     }
 }
