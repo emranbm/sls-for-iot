@@ -48,6 +48,26 @@ export class SlsSdk {
         this.isSending = false
     }
 
+    public async sendMessageToClient(clientId: string, subTopic: string, msg: any): Promise<void> {
+        await this.mqttClient.publish(`sls/client/${clientId}/${subTopic}`, JSON.stringify(msg))
+    }
+
+    public async saveFile(content: string, virtualPath: string): Promise<void> {
+        throw new Error("Not implemented!")
+    }
+
+    public async readFile(virtualPath: string): Promise<string> {
+        throw new Error("Not implemented!")
+    }
+
+    public async listFiles(): Promise<string[]> {
+        throw new Error("Not implemented!")
+    }
+
+    public async deleteFile(virtualPath: string): Promise<void> {
+        throw new Error("Not implemented!")
+    }
+
     private onMessage(topic: string, message: Buffer) {
         console.debug(`Message received from topic "${topic}"`)
         const msgStr = message.toString()
@@ -63,10 +83,6 @@ export class SlsSdk {
             default:
                 throw new Error(`Unexpected topic: ${topic}`)
         }
-    }
-
-    public async sendMessageToClient(clientId: string, subTopic: string, msg: any): Promise<void> {
-        await this.mqttClient.publish(`sls/client/${clientId}/${subTopic}`, JSON.stringify(msg))
     }
 
     private async handleSaveResponse(msg: SaveRequestResponseMsg) {
