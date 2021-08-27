@@ -44,6 +44,7 @@ export class Engine {
     private handleSaveRequest(msg: SaveRequestMsg): void {
         let freeClient = FreeSpaceFinderFactory.instance.findFreeClient(ClientRepoFactory.instance, msg.neededBytes)
         let respMsg: SaveRequestResponseMsg = {
+            requestId: msg.requestId,
             canSave: !!freeClient,
             clientInfo: freeClient ? {
                 clientId: freeClient.id,
