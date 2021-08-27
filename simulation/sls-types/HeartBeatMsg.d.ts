@@ -1,1 +1,1 @@
-type HeartBeatMsg = ClientInfoMsg
+type HeartBeatMsg = ClientInfo

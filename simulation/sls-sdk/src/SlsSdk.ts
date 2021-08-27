@@ -1,25 +1,31 @@
+import * as MQTT from "async-mqtt"
 import { AsyncMqttClient } from "async-mqtt";
 import * as diskusage from "diskusage"
-import * as config from "./config.json"
-import {promises as fs} from 'fs'
+import { promises as fs } from 'fs'
 
 const TOPIC_HEART_BEAT = "sls/manager/heart-bit"
 const SUB_TOPIC_SAVE_RESPONSE = "save-response"
 const SUB_TOPIC_SAVE = "save-response"
+const HEART_BEAT_INTERVAL = 10000
 
-export class ClientEngine {
+export class SlsSdk {
     private mqttClient: AsyncMqttClient
     private clientId: string
     private isSending: boolean = false
     private baseTopic: string
+    private brokerUrl: string
+    private storageRoot: string
 
-    constructor(mqttClient: AsyncMqttClient, clientId: string) {
-        this.mqttClient = mqttClient
+    constructor(brokerUrl: string, clientId: string, storageRoot: string = './storage/') {
+        this.brokerUrl = brokerUrl
         this.clientId = clientId
+        this.storageRoot = storageRoot
         this.baseTopic = `sls/client/${this.clientId}`
     }
 
     public async start() {
+        console.log(`Connecting to broker at: ${this.brokerUrl}`)
+        this.mqttClient = await MQTT.connectAsync(this.brokerUrl)
         await this.mqttClient.subscribe(this.baseTopic)
         await this.mqttClient.subscribe(`${this.baseTopic}/${SUB_TOPIC_SAVE_RESPONSE}`)
         this.mqttClient.on('message', this.onMessage.bind(this))
@@ -27,12 +33,12 @@ export class ClientEngine {
             if (this.isSending)
                 return
             this.sendHeartBeat()
-        }, config.heartBeatInterval)
+        }, HEART_BEAT_INTERVAL)
     }
 
     private async sendHeartBeat() {
         this.isSending = true
-        const info = await diskusage.check(config.storageRoot)
+        const info = await diskusage.check(this.storageRoot)
         const msg: HeartBeatMsg = {
             clientId: this.clientId,
             freeBytes: info.available,
@@ -79,7 +85,7 @@ export class ClientEngine {
     }
 
     private async handleSave(msg: SaveMsg) {
-        const clientDir = `${config.storageRoot}/${msg.clientId}`
+        const clientDir = `${this.storageRoot}/${msg.clientId}`
         await fs.mkdir(clientDir, { recursive: true })
         await fs.writeFile(`${clientDir}/${msg.file.name}`, msg.file.content)
     }

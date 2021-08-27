@@ -1,6 +1,5 @@
-import * as MQTT from "async-mqtt"
 import * as config from "./config.json"
-import { ClientEngine } from "./ClientEngine"
+import { SlsSdk } from "./SlsSdk"
 
 async function main() {
     const ID = process.argv[2]
@@ -9,9 +8,7 @@ async function main() {
         process.exit(1)
     }
     console.log(`Client ID: ${ID}`)
-    console.log(`Connecting to broker at: ${config.brokerUrl}`)
-    const mqttClient = await MQTT.connectAsync(config.brokerUrl)
-    const engine = new ClientEngine(mqttClient, ID)
+    const engine = new SlsSdk(config.brokerUrl, ID)
     engine.start()
 }
 

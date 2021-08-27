@@ -2,3 +2,4 @@
 /// <reference path="SaveRequestMsg.d.ts" />
 /// <reference path="SaveRequestResponseMsg.d.ts" />
 /// <reference path="SaveMsg.d.ts" />
+/// <reference path="ClientInfo.d.ts" />
