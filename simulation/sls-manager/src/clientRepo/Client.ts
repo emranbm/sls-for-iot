@@ -1,4 +1,4 @@
-export class Client implements ClientInfoMsg {
+export class Client {
     id: string;
     freeBytes?: number;
     totalBytes?: number;
@@ -9,10 +9,6 @@ export class Client implements ClientInfoMsg {
         this.freeBytes = freeBytes
         this.totalBytes = totalBytes
         this.lastUpdated = lastUpdated
-    }
-
-    get clientId() {
-        return this.id
     }
 
     get freeSpaceRatio() {

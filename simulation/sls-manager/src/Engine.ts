@@ -5,6 +5,7 @@ import { FreeSpaceFinderFactory } from "./freeSpaceFinder/FreeSpaceFinderFactory
 
 const TOPIC_HEART_BEAT = "sls/manager/heart-bit"
 const TOPIC_SAVE_REQUEST = "sls/manager/save-request"
+const SUB_TOPIC_SAVE_RESPONSE = "save-response"
 
 export class Engine {
     private mqttClient: AsyncMqttClient
@@ -42,11 +43,18 @@ export class Engine {
 
     private handleSaveRequest(msg: SaveRequestMsg): void {
         let freeClient = FreeSpaceFinderFactory.instance.findFreeClient(ClientRepoFactory.instance, msg.neededBytes)
-        let respMsg: ClientInfoMsg = freeClient || { clientId: null, freeBytes: null, totalBytes: null }
-        this.sendMessageToClient(msg.clientId, respMsg)
+        let respMsg: SaveRequestResponseMsg = {
+            canSave: !!freeClient,
+            clientInfo: freeClient ? {
+                clientId: freeClient.id,
+                freeBytes: freeClient.freeBytes,
+                totalBytes: freeClient.totalBytes
+            } : null
+        }
+        this.sendMessageToClient(msg.clientId, SUB_TOPIC_SAVE_RESPONSE, respMsg)
     }
 
-    public async sendMessageToClient(clientId: string, msg: any): Promise<void> {
-        await this.mqttClient.publish(`sls/client/${clientId}`, JSON.stringify(msg))
+    public async sendMessageToClient(clientId: string, subTopic: string, msg: any): Promise<void> {
+        await this.mqttClient.publish(`sls/client/${clientId}/${subTopic}`, JSON.stringify(msg))
     }
 }
