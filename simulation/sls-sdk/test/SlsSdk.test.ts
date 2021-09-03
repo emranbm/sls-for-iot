@@ -5,7 +5,7 @@ import { SlsSdk } from '../src/SlsSdk'
 
 describe('SlsSdk', function () {
   describe('#start', function () {
-    it('should subscribe to self topics', function () {
+    it('should connect to the given broker', function () {
       const brokerUrl = "mqtt://test"
       const connectMethod = sinon.stub(MQTT, "connectAsync")
       const sdk = new SlsSdk(brokerUrl, '1')
