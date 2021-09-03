@@ -32,6 +32,8 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: simulation/sls-sdk//package-lock.json
       - working-directory: simulation/sls-sdk/
         run: npm install
       - working-directory: simulation/sls-sdk/
