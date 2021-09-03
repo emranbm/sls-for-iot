@@ -1,9 +1,9 @@
 import * as config from "./config.json"
-import { SlsSdk } from "./SlsSdk"
+import { SlsSdk as LocalSlsSdk } from "./SlsSdk"
 
 async function main() {
     const ID = process.argv[2]
-    if (!ID){
+    if (!ID) {
         console.error("Specify client id as an argument.")
         process.exit(1)
     }
@@ -12,4 +12,8 @@ async function main() {
     engine.start()
 }
 
-main()
+// A hack to export SlsSdk while keeping this file as "main" in package.json
+export class SlsSdk extends LocalSlsSdk { }
+
+if (require.main === module)
+    main()
