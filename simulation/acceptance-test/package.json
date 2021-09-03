@@ -1,0 +1,33 @@
+{
+  "name": "sls-acceptance-test",
+  "version": "0.1.0",
+  "description": "SLS Acceptance Test",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/ts-mocha/bin/ts-mocha -p tsconfig.json test/**/*.test.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emranbm/ms-project.git"
+  },
+  "keywords": [
+    "SLS",
+    "acceptance-test",
+    "test"
+  ],
+  "author": "Emran Batmanghelich",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/emranbm/ms-project/issues"
+  },
+  "homepage": "https://github.com/emranbm/ms-project#readme",
+  "dependencies": {
+    "ts-mocha": "^8.0.0",
+    "typescript": "^4.3.5"
+  },
+  "devDependencies": {
+    "@types/mocha": "^9.0.0",
+    "@types/node": "^16.6.0",
+    "@types/sls-types": "file:../sls-types"
+  }
+}

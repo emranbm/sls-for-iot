@@ -33,8 +33,25 @@ jobs:
         with:
           node-version: '16'
           cache: 'npm'
-          cache-dependency-path: simulation/sls-sdk//package-lock.json
+          cache-dependency-path: simulation/sls-sdk/package-lock.json
       - working-directory: simulation/sls-sdk/
         run: npm install
       - working-directory: simulation/sls-sdk/
+        run: npm run test
+  acceptance-test:
+    name: Acceptance Test
+    runs-on: ubuntu-20.04
+    needs:
+      - build-simulation-services
+      - test
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: simulation/acceptance-test/package-lock.json
+      - working-directory: simulation/acceptance-test/
+        run: npm install
+      - working-directory: simulation/acceptance-test/
         run: npm run test
