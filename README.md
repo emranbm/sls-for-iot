@@ -9,6 +9,10 @@ Here's my roadmap to get the project done. It's definitely not fixed and is subj
 - [x] Get the acceptance of the proposal
 - [x] Create a dockerized simulation environment
 - [ ] Design and semi-implement the shared storage
+  - [ ] Save file
+  - [ ] Read file
+  - [ ] Delete file
+  - [ ] List files
 - [ ] Test and Benchmark
 - [ ] Revise the design and implementation, if needed
 - [ ] Write down the paper
