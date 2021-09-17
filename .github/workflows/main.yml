@@ -50,9 +50,7 @@ jobs:
         with:
           node-version: '16'
           cache: 'npm'
-          cache-dependency-path: |
-            simulation/sls-sdk/package-lock.json
-            simulation/acceptance-test/package-lock.json
+          cache-dependency-path: simulation/**/package-lock.json
       - working-directory: simulation/sls-sdk/
         run: npm install
       - working-directory: simulation/acceptance-test/
