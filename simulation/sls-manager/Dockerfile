@@ -6,6 +6,6 @@ COPY sls-types/ ../sls-types
 COPY sls-shared-utils/ ../sls-shared-utils
 RUN npm install
 COPY . .
-RUN rm -rf sls-types/
+RUN rm -rf sls-types/ sls-shared-utils/
 RUN npm run build
 CMD sh update-config.sh && node build/main.js
