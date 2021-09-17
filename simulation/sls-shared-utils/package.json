@@ -2,8 +2,9 @@
   "name": "sls-shared-utils",
   "version": "0.1.0",
   "description": "Shared utilities for SLS system",
-  "main": "",
+  "main": "build/index.js",
   "scripts": {
+    "build": "node_modules/typescript/bin/tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -22,5 +23,9 @@
   "homepage": "https://github.com/emranbm/ms-project#readme",
   "dependencies": {
     "async-mqtt": "^2.6.1"
+  },
+  "devDependencies": {
+    "@types/node": "^16.6.0",
+    "typescript": "^4.3.5"
   }
 }
