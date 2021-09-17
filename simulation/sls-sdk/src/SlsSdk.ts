@@ -4,11 +4,12 @@ import * as diskusage from "diskusage"
 import { promises as fs } from 'fs'
 import { MessageUtils, Topics } from 'sls-shared-utils'
 import { ClientTopics } from 'sls-shared-utils/Topics';
+import { SdkNotStartedError } from './SdkNotStartedError';
 
 const HEART_BEAT_INTERVAL = 10000
 
 export class SlsSdk {
-    private mqttClient: AsyncMqttClient
+    private mqttClient: AsyncMqttClient = null
     private clientId: string
     private isSending: boolean = false
     private brokerUrl: string
@@ -39,6 +40,15 @@ export class SlsSdk {
         }, HEART_BEAT_INTERVAL)
     }
 
+    public get isStarted(){
+        return this.mqttClient !== null
+    }
+
+    private checkStarted(){
+        if (!this.isStarted)
+            throw new SdkNotStartedError()
+    }
+
     private async sendHeartBeat() {
         this.isSending = true
         const info = await diskusage.check(this.storageRoot)
@@ -52,6 +62,7 @@ export class SlsSdk {
     }
 
     public async saveFile(content: string, virtualPath: string): Promise<void> {
+        this.checkStarted()
         if (this.currentSaveAttempt !== null)
             throw Error("Another save is already in progress!")
         this.currentSaveAttempt = {
@@ -72,14 +83,17 @@ export class SlsSdk {
     }
 
     public async readFile(virtualPath: string): Promise<string> {
+        this.checkStarted()
         throw new Error("Not implemented!")
     }
 
     public async listFiles(): Promise<string[]> {
+        this.checkStarted()
         throw new Error("Not implemented!")
     }
 
     public async deleteFile(virtualPath: string): Promise<void> {
+        this.checkStarted()
         throw new Error("Not implemented!")
     }
 
