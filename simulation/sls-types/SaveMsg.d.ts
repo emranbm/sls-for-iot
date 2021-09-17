@@ -1,4 +1,5 @@
 type SaveMsg = {
+    requestId: string,
     clientId: string,
     file: FileObj
 }

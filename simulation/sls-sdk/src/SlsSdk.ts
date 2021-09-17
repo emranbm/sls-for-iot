@@ -15,6 +15,7 @@ export class SlsSdk {
     private storageRoot: string
     private messageUtils: MessageUtils
     private clientTopics: ClientTopics
+    private currentSaveAttempt: SaveAttemptInfo = null
 
     constructor(brokerUrl: string, clientId: string, storageRoot: string = './storage/') {
         this.brokerUrl = brokerUrl
@@ -28,6 +29,7 @@ export class SlsSdk {
         this.mqttClient = await MQTT.connectAsync(this.brokerUrl)
         this.messageUtils = new MessageUtils(this.mqttClient)
         await this.mqttClient.subscribe(this.clientTopics.baseTopic)
+        await this.mqttClient.subscribe(this.clientTopics.saveAck)
         await this.mqttClient.subscribe(this.clientTopics.saveResponse)
         this.mqttClient.on('message', this.onMessage.bind(this))
         setInterval(() => {
@@ -50,7 +52,23 @@ export class SlsSdk {
     }
 
     public async saveFile(content: string, virtualPath: string): Promise<void> {
-        throw new Error("Not implemented!")
+        if (this.currentSaveAttempt !== null)
+            throw Error("Another save is already in progress!")
+        this.currentSaveAttempt = {
+            saveRequestId: Math.random().toString(),
+            content,
+            virtualPath
+        }
+        let msg: SaveRequestMsg = {
+            clientId: this.clientId,
+            neededBytes: Buffer.byteLength(content, 'utf-8'),
+            requestId: this.currentSaveAttempt.saveRequestId
+        }
+        await this.messageUtils.sendMessage(Topics.manager.saveRequest, msg)
+        return new Promise<void>((resolve, reject) => {
+            this.currentSaveAttempt.resolve = resolve
+            this.currentSaveAttempt.reject = reject
+        })
     }
 
     public async readFile(virtualPath: string): Promise<string> {
@@ -71,27 +89,31 @@ export class SlsSdk {
         console.debug(msgStr)
         const msg = JSON.parse(msgStr)
         switch (topic) {
-            case this.clientTopics.saveResponse:
-                this.handleSaveResponse(msg)
+            case this.clientTopics.saveAck:
+                this.handleSaveAck(msg)
                 break
             case this.clientTopics.save:
                 this.handleSave(msg)
+                break
+            case this.clientTopics.saveResponse:
+                this.handleSaveResponse(msg)
                 break
             default:
                 throw new Error(`Unexpected topic: ${topic}`)
         }
     }
 
-    private async handleSaveResponse(msg: SaveRequestResponseMsg) {
+    private async handleSaveAck(msg: SaveRequestAckMsg) {
         if (!msg.canSave) {
-            console.log("Can't save right now!")
+            this.currentSaveAttempt.reject(`Can't save right now: ${msg.description}`)
             return
         }
         const saveMsg: SaveMsg = {
+            requestId: msg.requestId,
             clientId: this.clientId,
-            file: { // TODO: Send a real file. Issue #1
-                name: "my-file.data",
-                content: "sample-data",
+            file: {
+                name: this.currentSaveAttempt.virtualPath,
+                content: this.currentSaveAttempt.content,
             }
         }
         await this.messageUtils.sendMessage(Topics.client(msg.clientInfo.clientId).save, saveMsg)
@@ -101,5 +123,18 @@ export class SlsSdk {
         const clientDir = `${this.storageRoot}/${msg.clientId}`
         await fs.mkdir(clientDir, { recursive: true })
         await fs.writeFile(`${clientDir}/${msg.file.name}`, msg.file.content)
+        let respMsg: SaveResponseMsg = {
+            requestId: msg.requestId,
+            saved: true
+        }
+        await this.messageUtils.sendMessage(Topics.client(msg.clientId).saveResponse, respMsg)
+    }
+
+    private async handleSaveResponse(msg: SaveResponseMsg){
+        if (msg.saved)
+            this.currentSaveAttempt.resolve()
+        else
+            this.currentSaveAttempt.reject(`File not saved. Description: ${msg.description}`)
+        this.currentSaveAttempt = null
     }
 }

@@ -7,6 +7,7 @@ export class ClientTopics {
     public get baseTopic() { return `sls/client/${this.clientId}` }
     public get save() { return `${this.baseTopic}/save` }
     public get saveResponse() { return `${this.baseTopic}/save-response` }
+    public get saveAck() { return `${this.baseTopic}/save-ack` }
 }
 
 export class ManagerTopics {
