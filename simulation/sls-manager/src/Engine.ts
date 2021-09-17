@@ -42,7 +42,7 @@ export class Engine {
 
     private handleSaveRequest(msg: SaveRequestMsg): void {
         let freeClient = FreeSpaceFinderFactory.instance.findFreeClient(ClientRepoFactory.instance, msg.neededBytes)
-        let respMsg: SaveRequestResponseMsg = {
+        let ackMsg: SaveRequestAckMsg = {
             requestId: msg.requestId,
             canSave: !!freeClient,
             clientInfo: freeClient ? {
@@ -51,6 +51,6 @@ export class Engine {
                 totalBytes: freeClient.totalBytes
             } : null
         }
-        this.messageUtils.sendMessage(Topics.client(msg.clientId).saveResponse, respMsg)
+        this.messageUtils.sendMessage(Topics.client(msg.clientId).saveResponse, ackMsg)
     }
 }

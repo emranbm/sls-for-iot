@@ -1,6 +1,6 @@
 type SaveRequestAckMsg = {
     requestId: string,
     canSave: boolean,
-    description: string,
+    description?: string,
     clientInfo?: ClientInfo
 }
