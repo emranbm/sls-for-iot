@@ -24,7 +24,8 @@
   },
   "homepage": "https://github.com/emranbm/ms-project#readme",
   "dependencies": {
-    "async-mqtt": "^2.6.1"
+    "async-mqtt": "^2.6.1",
+    "sls-shared-utils": "file:../sls-shared-utils"
   },
   "devDependencies": {
     "@types/node": "^16.6.0",

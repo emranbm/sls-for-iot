@@ -1,33 +1,34 @@
 import * as MQTT from "async-mqtt"
-import { AsyncMqttClient } from "async-mqtt";
+import { AsyncMqttClient } from "async-mqtt"
 import * as diskusage from "diskusage"
 import { promises as fs } from 'fs'
+import { MessageUtils, Topics } from 'sls-shared-utils'
+import { ClientTopics } from 'sls-shared-utils/Topics';
 
-const TOPIC_HEART_BEAT = "sls/manager/heart-bit"
-const SUB_TOPIC_SAVE_RESPONSE = "save-response"
-const SUB_TOPIC_SAVE = "save-response"
 const HEART_BEAT_INTERVAL = 10000
 
 export class SlsSdk {
     private mqttClient: AsyncMqttClient
     private clientId: string
     private isSending: boolean = false
-    private baseTopic: string
     private brokerUrl: string
     private storageRoot: string
+    private messageUtils: MessageUtils
+    private clientTopics: ClientTopics
 
     constructor(brokerUrl: string, clientId: string, storageRoot: string = './storage/') {
         this.brokerUrl = brokerUrl
         this.clientId = clientId
         this.storageRoot = storageRoot
-        this.baseTopic = `sls/client/${this.clientId}`
+        this.clientTopics = Topics.client(clientId)
     }
 
     public async start() {
         console.log(`Connecting to broker at: ${this.brokerUrl}`)
         this.mqttClient = await MQTT.connectAsync(this.brokerUrl)
-        await this.mqttClient.subscribe(this.baseTopic)
-        await this.mqttClient.subscribe(`${this.baseTopic}/${SUB_TOPIC_SAVE_RESPONSE}`)
+        this.messageUtils = new MessageUtils(this.mqttClient)
+        await this.mqttClient.subscribe(this.clientTopics.baseTopic)
+        await this.mqttClient.subscribe(this.clientTopics.saveResponse)
         this.mqttClient.on('message', this.onMessage.bind(this))
         setInterval(() => {
             if (this.isSending)
@@ -44,12 +45,8 @@ export class SlsSdk {
             freeBytes: info.available,
             totalBytes: info.total
         }
-        await this.mqttClient.publish(TOPIC_HEART_BEAT, JSON.stringify(msg))
+        await this.mqttClient.publish(Topics.manager.heartBeat, JSON.stringify(msg))
         this.isSending = false
-    }
-
-    public async sendMessageToClient(clientId: string, subTopic: string, msg: any): Promise<void> {
-        await this.mqttClient.publish(`sls/client/${clientId}/${subTopic}`, JSON.stringify(msg))
     }
 
     public async saveFile(content: string, virtualPath: string): Promise<void> {
@@ -74,10 +71,10 @@ export class SlsSdk {
         console.debug(msgStr)
         const msg = JSON.parse(msgStr)
         switch (topic) {
-            case `${this.baseTopic}/${SUB_TOPIC_SAVE_RESPONSE}`:
+            case this.clientTopics.saveResponse:
                 this.handleSaveResponse(msg)
                 break
-            case `${this.baseTopic}/${SUB_TOPIC_SAVE}`:
+            case this.clientTopics.save:
                 this.handleSave(msg)
                 break
             default:
@@ -97,7 +94,7 @@ export class SlsSdk {
                 content: "sample-data",
             }
         }
-        await this.sendMessageToClient(msg.clientInfo.clientId, SUB_TOPIC_SAVE, saveMsg)
+        await this.messageUtils.sendMessage(Topics.client(msg.clientInfo.clientId).save, saveMsg)
     }
 
     private async handleSave(msg: SaveMsg) {

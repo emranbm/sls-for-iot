@@ -3,6 +3,7 @@ WORKDIR /app/
 COPY package.json .
 COPY package-lock.json .
 COPY sls-types/ ../sls-types
+COPY sls-shared-utils/ ../sls-shared-utils
 RUN npm install
 COPY . .
 RUN rm -rf sls-types/

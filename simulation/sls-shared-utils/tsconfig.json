@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "emitDecoratorMetadata": false,
+        "module": "commonjs",
+        "target": "ES6",
+        "outDir": "build",
+        "resolveJsonModule": true,
+        "types": ["node", "sls-types", "mocha"]
+    }
+}

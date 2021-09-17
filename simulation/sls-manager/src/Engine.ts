@@ -2,21 +2,20 @@ import { AsyncMqttClient } from "async-mqtt";
 import { Client } from "./clientRepo/Client";
 import { ClientRepoFactory } from "./clientRepo/ClientRepoFactory";
 import { FreeSpaceFinderFactory } from "./freeSpaceFinder/FreeSpaceFinderFactory";
-
-const TOPIC_HEART_BEAT = "sls/manager/heart-bit"
-const TOPIC_SAVE_REQUEST = "sls/manager/save-request"
-const SUB_TOPIC_SAVE_RESPONSE = "save-response"
+import { Topics, MessageUtils } from 'sls-shared-utils';
 
 export class Engine {
     private mqttClient: AsyncMqttClient
+    private messageUtils: MessageUtils
+
     constructor(mqttClient: AsyncMqttClient) {
         this.mqttClient = mqttClient
+        this.messageUtils = new MessageUtils(mqttClient)
     }
 
     public async start() {
-        await this.mqttClient.subscribe(TOPIC_HEART_BEAT)
-        await this.mqttClient.subscribe(TOPIC_SAVE_REQUEST)
-
+        await this.mqttClient.subscribe(Topics.manager.heartBeat)
+        await this.mqttClient.subscribe(Topics.manager.saveRequest)
         this.mqttClient.on("message", this.onMessage.bind(this))
     }
 
@@ -26,10 +25,10 @@ export class Engine {
         console.debug(msgStr)
         const msg = JSON.parse(msgStr)
         switch (topic) {
-            case TOPIC_HEART_BEAT:
+            case Topics.manager.heartBeat:
                 this.handleHeartBeat(msg)
                 break
-            case TOPIC_SAVE_REQUEST:
+            case Topics.manager.saveRequest:
                 this.handleSaveRequest(msg)
                 break
             default:
@@ -52,10 +51,6 @@ export class Engine {
                 totalBytes: freeClient.totalBytes
             } : null
         }
-        this.sendMessageToClient(msg.clientId, SUB_TOPIC_SAVE_RESPONSE, respMsg)
-    }
-
-    public async sendMessageToClient(clientId: string, subTopic: string, msg: any): Promise<void> {
-        await this.mqttClient.publish(`sls/client/${clientId}/${subTopic}`, JSON.stringify(msg))
+        this.messageUtils.sendMessage(Topics.client(msg.clientId).saveResponse, respMsg)
     }
 }
