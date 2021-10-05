@@ -1,5 +1,6 @@
 {
     "brokerUrl": "mqtt://localhost:1883",
     "heartBeatInterval": 10000,
-    "storageRoot": "./storage/"
+    "storageRoot": "./storage/",
+    "logLevel": "silly"
 }

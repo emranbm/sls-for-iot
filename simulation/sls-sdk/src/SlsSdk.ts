@@ -8,6 +8,7 @@ import { ConcurrentSaveError } from "./errors/ConcurrentSaveError"
 import { SaveError } from "./errors/SaveError"
 import { SdkNotStartedError } from './errors/SdkNotStartedError';
 import { TimeoutError } from "./errors/TimeoutError"
+import logger from "./logger"
 
 const HEART_BEAT_INTERVAL = 10000
 const SAVE_ATTEMPT_TIMEOUT = 10000
@@ -30,7 +31,7 @@ export class SlsSdk {
     }
 
     public async start() {
-        console.log(`Connecting to broker at: ${this.brokerUrl}`)
+        logger.debug(`Connecting to broker at: ${this.brokerUrl}`)
         this.mqttClient = await MQTT.connectAsync(this.brokerUrl)
         this.messageUtils = new MessageUtils(this.mqttClient)
         await fs.mkdir(this.storageRoot, { recursive: true })
@@ -111,9 +112,9 @@ export class SlsSdk {
     }
 
     private onMessage(topic: string, message: Buffer) {
-        console.debug(`Message received on topic "${topic}"`)
+        logger.debug(`Message received on topic "${topic}"`)
         const msgStr = message.toString()
-        console.debug(msgStr)
+        logger.silly(`Message content: \n${msgStr}`)
         const msg = JSON.parse(msgStr)
         switch (topic) {
             case this.clientTopics.findSaveHostResponse:
