@@ -1,6 +1,7 @@
 import * as assert from 'assert'
 import { SlsSdk } from 'sls-sdk'
 import * as fsLib from 'fs'
+import { FileExistsError } from 'sls-sdk/src/errors/FileExistsError';
 const fs = fsLib.promises
 
 const BROKER_URL = process.env.BROKER_URL
@@ -45,5 +46,15 @@ describe('save', function () {
         else
             assert.fail("The saved file did not found in any client!")
         assert.equal(savedContent.toString(), CONTENT)
+    });
+    it("TODO: file update should be prevented", async function () {
+        const CONTENT = "some-content"
+        const NEW_CONTENT = "some-new-content"
+        const PATH = "somefile.txt"
+        await sdk.start()
+        await sdk.saveFile(CONTENT, PATH)
+
+        // TODO: switch to assert.rejects
+        await assert.doesNotReject(sdk.saveFile(NEW_CONTENT, PATH), FileExistsError)
     });
 });
