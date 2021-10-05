@@ -21,3 +21,7 @@ Here's my roadmap to get the project done. It's not fixed and is subject to chan
 - [ ] Defend the dissertation
 - [ ] Enjoy the rest of your non-academic life!  
 (Is it going to check ever? I hope so!)
+
+## Relaxed Constraints
+For the sake of simplicity and staying minimal, some assumptions are made by design. Here is a list of them.
+1. Files are immutable. i.e. it's not possible to rewrite a file content; instead, it should be deleted first and created back with the new contents.
