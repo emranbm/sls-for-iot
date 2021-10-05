@@ -162,7 +162,19 @@ export class SlsSdk {
         await this.messageUtils.sendMessage(Topics.client(msg.clientId).saveResponse, respMsg)
     }
 
+    private get anySaveAttemptInProgress(): boolean {
+        return !!this.currentSaveAttempt
+    }
+
     private async handleSaveResponse(msg: SaveResponseMsg) {
+        if (!this.anySaveAttemptInProgress) {
+            logger.warning("handleSaveResponse: A save response received, but no save attempt is in progress! It may be because of a late timed out response.")
+            return
+        }
+        if (msg.requestId !== this.currentSaveAttempt?.saveRequestId) {
+            logger.warning("handleSaveResponse: Save request id doesn't match the one waiting for. It may be because of a late timed out response.")
+            return
+        }
         if (msg.saved)
             this.currentSaveAttempt.resolve()
         else
