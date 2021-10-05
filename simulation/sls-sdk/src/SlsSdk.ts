@@ -38,6 +38,7 @@ export class SlsSdk {
         await this.mqttClient.subscribe(this.clientTopics.findSaveHostResponse)
         await this.mqttClient.subscribe(this.clientTopics.saveResponse)
         this.mqttClient.on('message', this.onMessage.bind(this))
+        await this.sendHeartBeat()
         setInterval(() => {
             if (this.isSending)
                 return
