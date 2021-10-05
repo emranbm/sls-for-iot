@@ -8,7 +8,7 @@ import { ConcurrentSaveError } from "./errors/ConcurrentSaveError"
 import { SaveError } from "./errors/SaveError"
 import { SdkNotStartedError } from './errors/SdkNotStartedError';
 import { TimeoutError } from "./errors/TimeoutError"
-import logger from "./logger"
+import logger, { setClientIdForLogs } from "./logger"
 
 const HEART_BEAT_INTERVAL = 10000
 const SAVE_ATTEMPT_TIMEOUT = 10000
@@ -23,11 +23,13 @@ export class SlsSdk {
     private clientTopics: ClientTopics
     private currentSaveAttempt: SaveAttemptInfo = null
 
-    constructor(brokerUrl: string, clientId: string, storageRoot: string = './storage/') {
+    constructor(brokerUrl: string, clientId: string, storageRoot: string = './storage/', logLevel: string = "info") {
         this.brokerUrl = brokerUrl
         this.clientId = clientId
         this.storageRoot = storageRoot
         this.clientTopics = Topics.client(clientId)
+        logger.level = logLevel
+        setClientIdForLogs(clientId)
     }
 
     public async start() {

@@ -1,8 +1,13 @@
 import { createLogger, format, transports } from 'winston'
-import * as config from './config.json'
+
+let _clientId = "Unknown Client"
+
+export function setClientIdForLogs(clientId: string) {
+    _clientId = clientId
+}
 
 const logger = createLogger({
-    level: config.logLevel,
+    level: "info",
     format: format.combine(
         format.timestamp({
             format: 'YYYY-MM-DD HH:mm:ss'
@@ -17,7 +22,7 @@ const logger = createLogger({
                 format.colorize(),
                 format.simple(),
                 format.printf(({ level, message, service, timestamp }) => {
-                    return `${timestamp} [${service}] ${level}: ${message}`;
+                    return `[${_clientId}] ${level}: ${message}`;
                 })
             )
         })
