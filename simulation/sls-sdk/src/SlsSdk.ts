@@ -148,7 +148,6 @@ export class SlsSdk {
             }
         }
         await this.messageUtils.sendMessage(Topics.client(msg.clientInfo.clientId).save, saveMsg)
-        logger.silly("SS")
     }
 
     private async handleSaveRequest(msg: SaveRequestMsg) {
