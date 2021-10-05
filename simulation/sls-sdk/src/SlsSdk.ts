@@ -33,6 +33,7 @@ export class SlsSdk {
         console.log(`Connecting to broker at: ${this.brokerUrl}`)
         this.mqttClient = await MQTT.connectAsync(this.brokerUrl)
         this.messageUtils = new MessageUtils(this.mqttClient)
+        await fs.mkdir(this.storageRoot, { recursive: true })
         await this.mqttClient.subscribe(this.clientTopics.baseTopic)
         await this.mqttClient.subscribe(this.clientTopics.findSaveHostResponse)
         await this.mqttClient.subscribe(this.clientTopics.saveResponse)
