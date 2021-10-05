@@ -1,5 +1,11 @@
 type SaveRequestMsg = {
     requestId: string,
     clientId: string,
-    neededBytes: number,
+    file: FileObj
+}
+
+type FileObj = {
+    name: string,
+    content: string,
+    expireAt?: Date
 }
