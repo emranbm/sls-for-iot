@@ -1,4 +1,4 @@
-type SaveRequestAckMsg = {
+type FindSaveHostResponseMsg = {
     requestId: string,
     canSave: boolean,
     description?: string,

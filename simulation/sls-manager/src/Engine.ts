@@ -40,9 +40,9 @@ export class Engine {
         ClientRepoFactory.instance.addOrUpdateClient(Client.fromHeartBeatMsg(msg))
     }
 
-    private handleSaveRequest(msg: SaveRequestMsg): void {
+    private handleSaveRequest(msg: FindSaveHostRequestMsg): void {
         let freeClient = FreeSpaceFinderFactory.instance.findFreeClient(ClientRepoFactory.instance, msg.neededBytes)
-        let ackMsg: SaveRequestAckMsg = {
+        let respMsg: FindSaveHostResponseMsg = {
             requestId: msg.requestId,
             canSave: !!freeClient,
             clientInfo: freeClient ? {
@@ -51,6 +51,6 @@ export class Engine {
                 totalBytes: freeClient.totalBytes
             } : null
         }
-        this.messageUtils.sendMessage(Topics.client(msg.clientId).saveResponse, ackMsg)
+        this.messageUtils.sendMessage(Topics.client(msg.clientId).saveResponse, respMsg)
     }
 }

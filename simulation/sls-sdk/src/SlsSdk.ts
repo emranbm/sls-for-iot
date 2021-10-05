@@ -70,7 +70,7 @@ export class SlsSdk {
             content,
             virtualPath
         }
-        let msg: SaveRequestMsg = {
+        let msg: FindSaveHostRequestMsg = {
             clientId: this.clientId,
             neededBytes: Buffer.byteLength(content, 'utf-8'),
             requestId: this.currentSaveAttempt.saveRequestId
@@ -104,10 +104,10 @@ export class SlsSdk {
         const msg = JSON.parse(msgStr)
         switch (topic) {
             case this.clientTopics.saveAck:
-                this.handleSaveAck(msg)
+                this.handleFindSaveHostResponse(msg)
                 break
             case this.clientTopics.save:
-                this.handleSave(msg)
+                this.handleSaveRequest(msg)
                 break
             case this.clientTopics.saveResponse:
                 this.handleSaveResponse(msg)
@@ -117,12 +117,12 @@ export class SlsSdk {
         }
     }
 
-    private async handleSaveAck(msg: SaveRequestAckMsg) {
+    private async handleFindSaveHostResponse(msg: FindSaveHostResponseMsg) {
         if (!msg.canSave) {
             this.currentSaveAttempt.reject(`Can't save right now: ${msg.description}`)
             return
         }
-        const saveMsg: SaveMsg = {
+        const saveMsg: SaveRequestMsg = {
             requestId: msg.requestId,
             clientId: this.clientId,
             file: {
@@ -133,7 +133,7 @@ export class SlsSdk {
         await this.messageUtils.sendMessage(Topics.client(msg.clientInfo.clientId).save, saveMsg)
     }
 
-    private async handleSave(msg: SaveMsg) {
+    private async handleSaveRequest(msg: SaveRequestMsg) {
         const clientDir = `${this.storageRoot}/${msg.clientId}`
         await fs.mkdir(clientDir, { recursive: true })
         await fs.writeFile(`${clientDir}/${msg.file.name}`, msg.file.content)
