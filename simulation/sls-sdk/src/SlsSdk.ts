@@ -4,9 +4,13 @@ import * as diskusage from "diskusage"
 import { promises as fs } from 'fs'
 import { MessageUtils, Topics } from 'sls-shared-utils'
 import { ClientTopics } from 'sls-shared-utils/Topics';
+import { ConcurrentSaveError } from "./errors/ConcurrentSaveError"
+import { SaveError } from "./errors/SaveError"
 import { SdkNotStartedError } from './errors/SdkNotStartedError';
+import { TimeoutError } from "./errors/TimeoutError"
 
 const HEART_BEAT_INTERVAL = 10000
+const SAVE_ATTEMPT_TIMEOUT = 10000
 
 export class SlsSdk {
     private mqttClient: AsyncMqttClient = null
@@ -68,17 +72,24 @@ export class SlsSdk {
         this.currentSaveAttempt = {
             saveRequestId: Math.random().toString(),
             content,
-            virtualPath
+            virtualPath,
+            fulfilled: false
         }
         let msg: FindSaveHostRequestMsg = {
             clientId: this.clientId,
             neededBytes: Buffer.byteLength(content, 'utf-8'),
             requestId: this.currentSaveAttempt.saveRequestId
         }
-        await this.messageUtils.sendMessage(Topics.manager.saveRequest, msg)
+        await this.messageUtils.sendMessage(Topics.manager.findSaveHostRequest, msg)
         return new Promise<void>((resolve, reject) => {
             this.currentSaveAttempt.resolve = resolve
             this.currentSaveAttempt.reject = reject
+            setTimeout(() => {
+                if (this.currentSaveAttempt !== null && !this.currentSaveAttempt.fulfilled) {
+                    this.currentSaveAttempt.reject(new TimeoutError(SAVE_ATTEMPT_TIMEOUT))
+                    this.currentSaveAttempt = null
+                }
+            }, SAVE_ATTEMPT_TIMEOUT);
         })
     }
 
