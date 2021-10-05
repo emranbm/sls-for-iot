@@ -7,13 +7,13 @@ export class ClientTopics {
     public get baseTopic() { return `sls/client/${this.clientId}` }
     public get save() { return `${this.baseTopic}/save` }
     public get saveResponse() { return `${this.baseTopic}/save-response` }
-    public get saveAck() { return `${this.baseTopic}/save-ack` }
+    public get findSaveHostResponse() { return `${this.baseTopic}/find-save-host-response` }
 }
 
 export class ManagerTopics {
     public get baseTopic() { return "sls/manager" }
     public get heartBeat() { return `${this.baseTopic}/heart-bit` }
-    public get saveRequest() { return `${this.baseTopic}/save-request` }
+    public get findSaveHostRequest() { return `${this.baseTopic}/find-save-host-request` }
 }
 
 const managerTopics = new ManagerTopics()

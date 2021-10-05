@@ -30,7 +30,7 @@ export class SlsSdk {
         this.mqttClient = await MQTT.connectAsync(this.brokerUrl)
         this.messageUtils = new MessageUtils(this.mqttClient)
         await this.mqttClient.subscribe(this.clientTopics.baseTopic)
-        await this.mqttClient.subscribe(this.clientTopics.saveAck)
+        await this.mqttClient.subscribe(this.clientTopics.findSaveHostResponse)
         await this.mqttClient.subscribe(this.clientTopics.saveResponse)
         this.mqttClient.on('message', this.onMessage.bind(this))
         setInterval(() => {
@@ -40,11 +40,11 @@ export class SlsSdk {
         }, HEART_BEAT_INTERVAL)
     }
 
-    public get isStarted(){
+    public get isStarted() {
         return this.mqttClient !== null
     }
 
-    private checkStarted(){
+    private checkStarted() {
         if (!this.isStarted)
             throw new SdkNotStartedError()
     }
@@ -103,7 +103,7 @@ export class SlsSdk {
         console.debug(msgStr)
         const msg = JSON.parse(msgStr)
         switch (topic) {
-            case this.clientTopics.saveAck:
+            case this.clientTopics.findSaveHostResponse:
                 this.handleFindSaveHostResponse(msg)
                 break
             case this.clientTopics.save:
@@ -119,7 +119,7 @@ export class SlsSdk {
 
     private async handleFindSaveHostResponse(msg: FindSaveHostResponseMsg) {
         if (!msg.canSave) {
-            this.currentSaveAttempt.reject(`Can't save right now: ${msg.description}`)
+            this.currentSaveAttempt.reject(new SaveError(msg.description))
             return
         }
         const saveMsg: SaveRequestMsg = {
@@ -144,11 +144,11 @@ export class SlsSdk {
         await this.messageUtils.sendMessage(Topics.client(msg.clientId).saveResponse, respMsg)
     }
 
-    private async handleSaveResponse(msg: SaveResponseMsg){
+    private async handleSaveResponse(msg: SaveResponseMsg) {
         if (msg.saved)
             this.currentSaveAttempt.resolve()
         else
-            this.currentSaveAttempt.reject(`File not saved. Description: ${msg.description}`)
+            this.currentSaveAttempt.reject(new SaveError(JSON.stringify(msg)))
         this.currentSaveAttempt = null
     }
 }

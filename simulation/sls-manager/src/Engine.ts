@@ -15,7 +15,7 @@ export class Engine {
 
     public async start() {
         await this.mqttClient.subscribe(Topics.manager.heartBeat)
-        await this.mqttClient.subscribe(Topics.manager.saveRequest)
+        await this.mqttClient.subscribe(Topics.manager.findSaveHostRequest)
         this.mqttClient.on("message", this.onMessage.bind(this))
     }
 
@@ -28,8 +28,8 @@ export class Engine {
             case Topics.manager.heartBeat:
                 this.handleHeartBeat(msg)
                 break
-            case Topics.manager.saveRequest:
-                this.handleSaveRequest(msg)
+            case Topics.manager.findSaveHostRequest:
+                this.handleFindSaveHostRequest(msg)
                 break
             default:
                 throw new Error(`Unexpected topic: ${topic}`)
@@ -40,7 +40,7 @@ export class Engine {
         ClientRepoFactory.instance.addOrUpdateClient(Client.fromHeartBeatMsg(msg))
     }
 
-    private handleSaveRequest(msg: FindSaveHostRequestMsg): void {
+    private handleFindSaveHostRequest(msg: FindSaveHostRequestMsg): void {
         let freeClient = FreeSpaceFinderFactory.instance.findFreeClient(ClientRepoFactory.instance, msg.neededBytes)
         let respMsg: FindSaveHostResponseMsg = {
             requestId: msg.requestId,
@@ -49,8 +49,9 @@ export class Engine {
                 clientId: freeClient.id,
                 freeBytes: freeClient.freeBytes,
                 totalBytes: freeClient.totalBytes
-            } : null
+            } : null,
+            description: freeClient ? undefined : "No free client found."
         }
-        this.messageUtils.sendMessage(Topics.client(msg.clientId).saveResponse, respMsg)
+        this.messageUtils.sendMessage(Topics.client(msg.clientId).findSaveHostResponse, respMsg)
     }
 }
