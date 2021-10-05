@@ -1,10 +1,12 @@
 import * as assert from 'assert'
 import { SlsSdk } from 'sls-sdk'
 
+const BROKER_URL = process.env.BROKER_URL
+
 let sdk: SlsSdk = null
 
 beforeEach(function() {
-    sdk = new SlsSdk("TODO", "acceptance-test-client")
+    sdk = new SlsSdk(BROKER_URL, "acceptance-test-client")
 })
 
 describe('save', function () {
