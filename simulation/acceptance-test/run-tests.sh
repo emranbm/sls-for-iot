@@ -15,4 +15,4 @@ if $BUILD; then
 fi
 docker-compose up -d
 cd "$CWD"
-BROKER_URL=mqtt://localhost:1883 ./node_modules/ts-mocha/bin/ts-mocha --exit --timeout 10000
+BROKER_URL=mqtt://localhost:1883 ./node_modules/ts-mocha/bin/ts-mocha
