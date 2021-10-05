@@ -17,12 +17,12 @@ beforeEach(async function () {
 
 describe('save', function () {
     it('can save with single client', async function () {
-        const content = "some-content"
-        const path = "somefile.txt"
+        const CONTENT = "some-content"
+        const PATH = "somefile.txt"
         await sdk.start()
-        await sdk.saveFile(content, path)
-        const savedContent = await fs.readFile(`${STORAGE_ROOT_MAIN}/${TEST_CLIENT_ID}/${path}`)
-        assert.equal(savedContent.toString(), content)
+        await sdk.saveFile(CONTENT, PATH)
+        const savedContent = await fs.readFile(`${STORAGE_ROOT_MAIN}/${TEST_CLIENT_ID}/${PATH}`)
+        assert.equal(savedContent.toString(), CONTENT)
     });
     it('can save with multiple clients', async function () {
         const CONTENT = "some-content"
