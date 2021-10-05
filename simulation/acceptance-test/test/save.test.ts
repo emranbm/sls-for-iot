@@ -37,7 +37,7 @@ describe('save', function () {
         
         const FILE_PATH_ON_MAIN_CLIENT = `${STORAGE_ROOT_MAIN}/${TEST_CLIENT_ID}/${PATH}`
         const FILE_PATH_ON_CLIENT2 = `${STORAGE_ROOT_MAIN}/${CLIENT2_ID}/${PATH}`
-        let savedContent
+        let savedContent: Buffer
         if (fsLib.existsSync(FILE_PATH_ON_MAIN_CLIENT))
             savedContent = await fs.readFile(FILE_PATH_ON_MAIN_CLIENT)
         else if (fsLib.existsSync(FILE_PATH_ON_CLIENT2))
