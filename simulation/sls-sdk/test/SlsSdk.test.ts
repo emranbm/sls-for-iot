@@ -2,7 +2,7 @@ import * as assert from 'assert'
 import * as sinon from 'sinon'
 import * as MQTT from 'async-mqtt'
 import { SlsSdk } from '../src/SlsSdk'
-import { SdkNotStartedError } from '../src/SdkNotStartedError';
+import { SdkNotStartedError } from '../src/errors/SdkNotStartedError';
 
 let connectMethod = null
 

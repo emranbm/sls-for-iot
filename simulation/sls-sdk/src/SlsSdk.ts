@@ -4,7 +4,7 @@ import * as diskusage from "diskusage"
 import { promises as fs } from 'fs'
 import { MessageUtils, Topics } from 'sls-shared-utils'
 import { ClientTopics } from 'sls-shared-utils/Topics';
-import { SdkNotStartedError } from './SdkNotStartedError';
+import { SdkNotStartedError } from './errors/SdkNotStartedError';
 
 const HEART_BEAT_INTERVAL = 10000
 
@@ -64,7 +64,7 @@ export class SlsSdk {
     public async saveFile(content: string, virtualPath: string): Promise<void> {
         this.checkStarted()
         if (this.currentSaveAttempt !== null)
-            throw Error("Another save is already in progress!")
+            throw new ConcurrentSaveError()
         this.currentSaveAttempt = {
             saveRequestId: Math.random().toString(),
             content,
@@ -98,7 +98,7 @@ export class SlsSdk {
     }
 
     private onMessage(topic: string, message: Buffer) {
-        console.debug(`Message received from topic "${topic}"`)
+        console.debug(`Message received on topic "${topic}"`)
         const msgStr = message.toString()
         console.debug(msgStr)
         const msg = JSON.parse(msgStr)

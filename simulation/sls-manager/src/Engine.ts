@@ -20,7 +20,7 @@ export class Engine {
     }
 
     private onMessage(topic: string, message: Buffer) {
-        console.debug(`Message received from topic "${topic}"`)
+        console.debug(`Message received on topic "${topic}"`)
         const msgStr = message.toString()
         console.debug(msgStr)
         const msg = JSON.parse(msgStr)
