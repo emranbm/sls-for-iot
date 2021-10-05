@@ -37,6 +37,7 @@ export class SlsSdk {
         await fs.mkdir(this.storageRoot, { recursive: true })
         await this.mqttClient.subscribe(this.clientTopics.baseTopic)
         await this.mqttClient.subscribe(this.clientTopics.findSaveHostResponse)
+        await this.mqttClient.subscribe(this.clientTopics.save)
         await this.mqttClient.subscribe(this.clientTopics.saveResponse)
         this.mqttClient.on('message', this.onMessage.bind(this))
         await this.sendHeartBeat()
@@ -145,6 +146,7 @@ export class SlsSdk {
             }
         }
         await this.messageUtils.sendMessage(Topics.client(msg.clientInfo.clientId).save, saveMsg)
+        logger.silly("SS")
     }
 
     private async handleSaveRequest(msg: SaveRequestMsg) {
