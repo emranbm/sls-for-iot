@@ -1,6 +1,6 @@
 import { AsyncMqttClient } from "async-mqtt";
 import { Client } from "./clientRepo/Client";
-import { Topics, MessageUtils } from 'sls-shared-utils';
+import { Topics, MessageUtils, MqttSubscribeManager } from 'sls-shared-utils';
 import { IClientRepository } from './clientRepo/IClientRepository';
 import { InMemoryClientRepo } from './clientRepo/InMemoryClientRepo';
 import { IFileInfoRepository } from './fileObjectRepo/IFileInfoRepository';
@@ -27,26 +27,9 @@ export class Engine {
     }
 
     public async start() {
-        await this.mqttClient.subscribe(Topics.manager.heartBeat)
-        await this.mqttClient.subscribe(Topics.manager.findSaveHostRequest)
-        this.mqttClient.on("message", this.onMessage.bind(this))
-    }
-
-    private onMessage(topic: string, message: Buffer) {
-        console.debug(`Message received on topic "${topic}"`)
-        const msgStr = message.toString()
-        console.debug(msgStr)
-        const msg = JSON.parse(msgStr)
-        switch (topic) {
-            case Topics.manager.heartBeat:
-                this.handleHeartBeat(msg)
-                break
-            case Topics.manager.findSaveHostRequest:
-                this.handleFindSaveHostRequest(msg)
-                break
-            default:
-                throw new Error(`Unexpected topic: ${topic}`)
-        }
+        const subscribeManager = new MqttSubscribeManager(this.mqttClient, this)
+        await subscribeManager.subscribe(Topics.manager.heartBeat, this.handleHeartBeat)
+        await subscribeManager.subscribe(Topics.manager.findSaveHostRequest, this.handleFindSaveHostRequest)
     }
 
     private handleHeartBeat(msg: HeartBeatMsg): void {
