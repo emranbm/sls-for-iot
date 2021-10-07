@@ -9,6 +9,7 @@ import { SaveError } from "./errors/SaveError"
 import { SdkNotStartedError } from './errors/SdkNotStartedError';
 import { TimeoutError } from "./errors/TimeoutError"
 import logger, { setClientIdForLogs } from "./logger"
+import { MqttSunscribeManager } from 'sls-shared-utils/MqttSubscribeManager';
 
 const HEART_BEAT_INTERVAL = 10000
 const SAVE_ATTEMPT_TIMEOUT = 10000
@@ -37,11 +38,10 @@ export class SlsSdk {
         this.mqttClient = await MQTT.connectAsync(this.brokerUrl)
         this.messageUtils = new MessageUtils(this.mqttClient)
         await fs.mkdir(this.storageRoot, { recursive: true })
-        await this.mqttClient.subscribe(this.clientTopics.baseTopic)
-        await this.mqttClient.subscribe(this.clientTopics.findSaveHostResponse)
-        await this.mqttClient.subscribe(this.clientTopics.save)
-        await this.mqttClient.subscribe(this.clientTopics.saveResponse)
-        this.mqttClient.on('message', this.onMessage.bind(this))
+        const subscribeManager = new MqttSunscribeManager(this.mqttClient, this)
+        subscribeManager.subscribe(this.clientTopics.findSaveHostResponse, this.handleFindSaveHostResponse)
+        subscribeManager.subscribe(this.clientTopics.save, this.handleSaveRequest)
+        subscribeManager.subscribe(this.clientTopics.saveResponse, this.handleSaveResponse)
         await this.sendHeartBeat()
         setInterval(() => {
             if (this.isSending)
@@ -112,26 +112,6 @@ export class SlsSdk {
     public async deleteFile(virtualPath: string): Promise<void> {
         this.checkStarted()
         throw new Error("Not implemented!")
-    }
-
-    private onMessage(topic: string, message: Buffer) {
-        logger.debug(`Message received on topic "${topic}"`)
-        const msgStr = message.toString()
-        logger.silly(`Message content: \n${msgStr}`)
-        const msg = JSON.parse(msgStr)
-        switch (topic) {
-            case this.clientTopics.findSaveHostResponse:
-                this.handleFindSaveHostResponse(msg)
-                break
-            case this.clientTopics.save:
-                this.handleSaveRequest(msg)
-                break
-            case this.clientTopics.saveResponse:
-                this.handleSaveResponse(msg)
-                break
-            default:
-                throw new Error(`Unexpected topic: ${topic}`)
-        }
     }
 
     private async handleFindSaveHostResponse(msg: FindSaveHostResponseMsg) {
