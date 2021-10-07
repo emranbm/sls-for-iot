@@ -39,9 +39,9 @@ export class SlsSdk {
         this.messageUtils = new MessageUtils(this.mqttClient)
         await fs.mkdir(this.storageRoot, { recursive: true })
         const subscribeManager = new MqttSubscribeManager(this.mqttClient, this)
-        subscribeManager.subscribe(this.clientTopics.findSaveHostResponse, this.handleFindSaveHostResponse)
-        subscribeManager.subscribe(this.clientTopics.save, this.handleSaveRequest)
-        subscribeManager.subscribe(this.clientTopics.saveResponse, this.handleSaveResponse)
+        await subscribeManager.subscribe(this.clientTopics.findSaveHostResponse, this.handleFindSaveHostResponse)
+        await subscribeManager.subscribe(this.clientTopics.save, this.handleSaveRequest)
+        await subscribeManager.subscribe(this.clientTopics.saveResponse, this.handleSaveResponse)
         await this.sendHeartBeat()
         setInterval(() => {
             if (this.isSending)
