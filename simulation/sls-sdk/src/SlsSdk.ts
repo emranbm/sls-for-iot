@@ -9,7 +9,7 @@ import { SaveError } from "./errors/SaveError"
 import { SdkNotStartedError } from './errors/SdkNotStartedError';
 import { TimeoutError } from "./errors/TimeoutError"
 import logger, { setClientIdForLogs } from "./logger"
-import { MqttSunscribeManager } from 'sls-shared-utils/MqttSubscribeManager';
+import { MqttSubscribeManager } from 'sls-shared-utils/MqttSubscribeManager';
 
 const HEART_BEAT_INTERVAL = 10000
 const SAVE_ATTEMPT_TIMEOUT = 10000
@@ -38,7 +38,7 @@ export class SlsSdk {
         this.mqttClient = await MQTT.connectAsync(this.brokerUrl)
         this.messageUtils = new MessageUtils(this.mqttClient)
         await fs.mkdir(this.storageRoot, { recursive: true })
-        const subscribeManager = new MqttSunscribeManager(this.mqttClient, this)
+        const subscribeManager = new MqttSubscribeManager(this.mqttClient, this)
         subscribeManager.subscribe(this.clientTopics.findSaveHostResponse, this.handleFindSaveHostResponse)
         subscribeManager.subscribe(this.clientTopics.save, this.handleSaveRequest)
         subscribeManager.subscribe(this.clientTopics.saveResponse, this.handleSaveResponse)

@@ -1,6 +1,6 @@
 import { AsyncMqttClient } from 'async-mqtt';
 
-export class MqttSunscribeManager {
+export class MqttSubscribeManager {
     private mqttClient: AsyncMqttClient;
     private subscribedTopics: Map<string, Function> = new Map()
     private handlersThisArg: any
