@@ -4,4 +4,4 @@
 /// <reference path="SaveRequestMsg.d.ts" />
 /// <reference path="SaveResponseMsg.d.ts" />
 /// <reference path="ClientInfo.d.ts" />
-/// <reference path="FileObj.d.ts" />
+/// <reference path="FileObject.d.ts" />
