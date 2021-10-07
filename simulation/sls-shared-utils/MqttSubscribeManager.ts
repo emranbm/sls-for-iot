@@ -14,7 +14,7 @@ export class MqttSunscribeManager {
     public async subscribe(topic: string, handler: Function) {
         if (this.subscribedTopics.has(topic))
             throw Error("Already subscribed on this topic.")
-        this.mqttClient.subscribe(topic)
+        await this.mqttClient.subscribe(topic)
         this.subscribedTopics.set(topic, handler)
     }
 
