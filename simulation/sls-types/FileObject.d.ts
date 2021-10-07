@@ -1,5 +1,3 @@
-type FileObject = {
-    name: string,
+type FileObject = FileInfo & {
     content: string,
-    expireAt?: Date
 }

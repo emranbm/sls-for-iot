@@ -1,17 +1,17 @@
-import { IFileObjectRepository } from "./IFileObjectRepository";
+import { IFileInfoRepository } from "./IFileInfoRepository";
 
-export class InMemoryFileObjectRepo implements IFileObjectRepository {
-    private repo: Map<string, FileObject[]>
+export class InMemoryFileInfoRepo implements IFileInfoRepository {
+    private repo: Map<string, FileInfo[]>
 
-    addFile(clientId: string, file: FileObject): void {
-        let files: FileObject[] = this.repo.get(clientId)
+    addFile(clientId: string, file: FileInfo): void {
+        let files: FileInfo[] = this.repo.get(clientId)
         if (!files)
             files = []
         files.push(file)
         this.repo.set(clientId, files)
     }
     removeFile(clientId: string, path: string): boolean {
-        let files: FileObject[] = this.repo.get(clientId)
+        let files: FileInfo[] = this.repo.get(clientId)
         if (!files)
             return false
         const newFiles = []
@@ -23,7 +23,7 @@ export class InMemoryFileObjectRepo implements IFileObjectRepository {
                 removed = true
         return removed
     }
-    getFileRecords(clientId: string): FileObject[] {
+    getFileInfos(clientId: string): FileInfo[] {
         return this.repo.get(clientId)
     }
 

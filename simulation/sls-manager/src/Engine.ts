@@ -1,16 +1,29 @@
 import { AsyncMqttClient } from "async-mqtt";
 import { Client } from "./clientRepo/Client";
-import { ClientRepoFactory } from "./clientRepo/ClientRepoFactory";
-import { FreeSpaceFinderFactory } from "./freeSpaceFinder/FreeSpaceFinderFactory";
 import { Topics, MessageUtils } from 'sls-shared-utils';
+import { IClientRepository } from './clientRepo/IClientRepository';
+import { InMemoryClientRepo } from './clientRepo/InMemoryClientRepo';
+import { IFileInfoRepository } from './fileObjectRepo/IFileInfoRepository';
+import { InMemoryFileInfoRepo } from './fileObjectRepo/InMemoryFileInfoRepo';
+import { IFreeSpaceFinder } from './freeSpaceFinder/IFreeSpaceFinder';
+import { FirstFitFreeSpaceFinder } from './freeSpaceFinder/FirstFitFreeSpaceFinder';
 
 export class Engine {
     private mqttClient: AsyncMqttClient
     private messageUtils: MessageUtils
+    private clientRepo: IClientRepository
+    private freeSpaceFinder: IFreeSpaceFinder
+    private fileInfoRepo: IFileInfoRepository
 
-    constructor(mqttClient: AsyncMqttClient) {
+    constructor(mqttClient: AsyncMqttClient,
+        clientRepo: IClientRepository = new InMemoryClientRepo(),
+        freeSpaceFinder: IFreeSpaceFinder = new FirstFitFreeSpaceFinder(),
+        fileInfoRepo: IFileInfoRepository = new InMemoryFileInfoRepo) {
         this.mqttClient = mqttClient
         this.messageUtils = new MessageUtils(mqttClient)
+        this.clientRepo = clientRepo
+        this.freeSpaceFinder = freeSpaceFinder
+        this.fileInfoRepo = fileInfoRepo
     }
 
     public async start() {
@@ -37,11 +50,11 @@ export class Engine {
     }
 
     private handleHeartBeat(msg: HeartBeatMsg): void {
-        ClientRepoFactory.instance.addOrUpdateClient(Client.fromHeartBeatMsg(msg))
+        this.clientRepo.addOrUpdateClient(Client.fromHeartBeatMsg(msg))
     }
 
     private handleFindSaveHostRequest(msg: FindSaveHostRequestMsg): void {
-        let freeClient = FreeSpaceFinderFactory.instance.findFreeClient(ClientRepoFactory.instance, msg.neededBytes)
+        let freeClient = this.freeSpaceFinder.findFreeClient(this.clientRepo, msg.neededBytes)
         let respMsg: FindSaveHostResponseMsg = {
             requestId: msg.requestId,
             canSave: !!freeClient,
