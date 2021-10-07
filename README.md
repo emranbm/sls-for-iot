@@ -10,7 +10,7 @@ Here's my roadmap to get the project done. It's not fixed and is subject to chan
 - [x] Get the acceptance of the proposal
 - [x] Create a dockerized simulation environment
 - [ ] Design and semi-implement the shared storage
-  - [ ] Save file -> Current state: Inform saved file to manager
+  - [ ] Save file -> Current state: Synced client repository on SDK side
   - [ ] Read file
   - [ ] Delete file
   - [ ] List files
@@ -32,4 +32,4 @@ There are too many (if not infinite) cases to get optimized. Here is a memory of
 1. More efficient serialization protocols can be used instead of JSON. e.g. [protobuf](https://developers.google.com/protocol-buffers)
 1. File contents can be compressed before transmission.  
 But it should be tested whether it's worth doing computation over IO.
-1. Consider any message from clients as a heart beat. So that the client can send the heart beats less frequently.
+1. Consider any message from clients as a heartbeat. So the client can send the heartbeats less frequently.
