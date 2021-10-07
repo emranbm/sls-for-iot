@@ -3,13 +3,12 @@ import { AsyncMqttClient } from "async-mqtt"
 import * as diskusage from "diskusage"
 import { promises as fs } from 'fs'
 import { MessageUtils, Topics } from 'sls-shared-utils'
-import { ClientTopics } from 'sls-shared-utils/Topics';
+import { ClientTopics, MqttSubscribeManager } from 'sls-shared-utils';
 import { ConcurrentSaveError } from "./errors/ConcurrentSaveError"
 import { SaveError } from "./errors/SaveError"
 import { SdkNotStartedError } from './errors/SdkNotStartedError';
 import { TimeoutError } from "./errors/TimeoutError"
 import logger, { setClientIdForLogs } from "./logger"
-import { MqttSubscribeManager } from 'sls-shared-utils/MqttSubscribeManager';
 
 const HEART_BEAT_INTERVAL = 10000
 const SAVE_ATTEMPT_TIMEOUT = 10000
