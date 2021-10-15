@@ -1,7 +1,6 @@
 type SaveAttemptInfo = {
     saveRequestId: string,
-    content: string,
-    virtualPath: string,
+    file: FileObject,
     fulfilled: boolean,
     resolve?: Function,
     reject?: Function,

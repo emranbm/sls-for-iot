@@ -76,8 +76,11 @@ export class SlsSdk {
             throw new ConcurrentSaveError()
         this.currentSaveAttempt = {
             saveRequestId: Math.random().toString(),
+            file: {
             content,
-            virtualPath,
+                name: virtualPath,
+                ownerClientId: this.clientId
+            },
             fulfilled: false
         }
         let msg: FindSaveHostRequestMsg = {
@@ -125,11 +128,7 @@ export class SlsSdk {
         const saveMsg: SaveRequestMsg = {
             requestId: msg.requestId,
             clientId: this.clientId,
-            file: {
-                name: this.currentSaveAttempt.virtualPath,
-                content: this.currentSaveAttempt.content,
-                ownerClientId: this.clientId
-            }
+            file: this.currentSaveAttempt.file
         }
         await this.messageUtils.sendMessage(Topics.client(msg.clientInfo.clientId).save, saveMsg)
     }
