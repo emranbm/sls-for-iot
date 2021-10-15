@@ -1,7 +1,7 @@
 import { IFileInfoRepository } from "./IFileInfoRepository";
 
 export class InMemoryFileInfoRepo implements IFileInfoRepository {
-    private repo: Map<string, FileInfo[]>
+    private repo: Map<string, FileInfo[]> = new Map()
 
     addFile(clientId: string, file: FileInfo): void {
         let files: FileInfo[] = this.repo.get(clientId)
