@@ -33,3 +33,4 @@ There are too many (if not infinite) cases to get optimized. Here is a memory of
 1. File contents can be compressed before transmission.  
 But it should be tested whether it's worth doing computation over IO.
 1. Consider any message from clients as a heartbeat. So the client can send the heartbeats less frequently.
+1. Currently, the SDK holds file contents in memory before saving. It should also support other forms like file handles, etc.
