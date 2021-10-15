@@ -11,7 +11,7 @@ Here's my roadmap to get the project done. It's not fixed and is subject to chan
 - [x] Create a dockerized simulation environment
 - [ ] Design and semi-implement the shared storage
   - [x] Save file
-  - [ ] Read file
+  - [x] Read file
   - [ ] Delete file
   - [ ] List files
 - [ ] Test and Benchmark
