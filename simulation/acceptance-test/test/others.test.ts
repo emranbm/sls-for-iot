@@ -12,12 +12,6 @@ beforeEach(async function () {
     sdk = new SlsSdk(BROKER_URL, TEST_CLIENT_ID, STORAGE_ROOT_MAIN, "info")
 })
 
-describe('read', function () {
-    it('place holder', async function () {
-        await assert.rejects(sdk.readFile("somefile.txt"))
-    });
-});
-
 describe('delete', function () {
     it('place holder', async function () {
         await assert.rejects(sdk.deleteFile("somefile.txt"))
