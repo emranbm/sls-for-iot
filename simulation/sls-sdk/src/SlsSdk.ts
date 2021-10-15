@@ -128,6 +128,7 @@ export class SlsSdk {
             file: {
                 name: this.currentSaveAttempt.virtualPath,
                 content: this.currentSaveAttempt.content,
+                ownerClientId: this.clientId
             }
         }
         await this.messageUtils.sendMessage(Topics.client(msg.clientInfo.clientId).save, saveMsg)
