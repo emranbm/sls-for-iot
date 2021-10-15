@@ -98,7 +98,7 @@ export class SlsSdk {
                 content,
                 virtualPath,
             },
-            managedPromise: null
+            managedPromise: new ManagedTimedPromise<void>(SAVE_ATTEMPT_TIMEOUT)
         }
         let msg: FindSaveHostRequestMsg = {
             clientId: this.clientId,
@@ -106,8 +106,7 @@ export class SlsSdk {
             requestId: this.currentSaveAttempt.saveRequestId
         }
         await this.messageUtils.sendMessage(Topics.manager.findSaveHostRequest, msg)
-        this.currentSaveAttempt.managedPromise = new ManagedTimedPromise<void>(SAVE_ATTEMPT_TIMEOUT)
-        this.currentSaveAttempt.managedPromise.catch(() => this.currentSaveAttempt = null)
+        this.currentSaveAttempt.managedPromise.onFulfilled(() => this.currentSaveAttempt = null)
         return this.currentSaveAttempt.managedPromise.promise
     }
 
@@ -191,7 +190,6 @@ export class SlsSdk {
             this.currentSaveAttempt.managedPromise.doResolve()
         } else
             this.currentSaveAttempt.managedPromise.doReject(new SaveError(JSON.stringify(msg)))
-        this.currentSaveAttempt = null
     }
 
     private async handleReadRequest(msg: ReadFileRequestMsg) {
@@ -213,7 +211,7 @@ export class SlsSdk {
 
     private async handleReadResponse(msg: ReadFileResponseMsg) {
         const readAttemptInfo = ArrayUtils.find(this.currentReadAttempts, i => i.readRequestId === msg.requestId)
-        if (!readAttemptInfo){
+        if (!readAttemptInfo) {
             logger.warning(`An orphaned read response received. Request ID: ${msg.requestId}`)
             return
         }
