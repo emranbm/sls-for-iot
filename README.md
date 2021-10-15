@@ -10,7 +10,7 @@ Here's my roadmap to get the project done. It's not fixed and is subject to chan
 - [x] Get the acceptance of the proposal
 - [x] Create a dockerized simulation environment
 - [ ] Design and semi-implement the shared storage
-  - [ ] Save file -> Current state: Synced client repository on SDK side
+  - [x] Save file
   - [ ] Read file
   - [ ] Delete file
   - [ ] List files
