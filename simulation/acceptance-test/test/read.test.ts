@@ -1,7 +1,7 @@
 import * as assert from 'assert'
 import { SlsSdk } from 'sls-sdk'
 import * as fsLib from 'fs'
-import { FileExistsError } from 'sls-sdk/src/errors/FileExistsError';
+import { FileNotExistsError } from 'sls-sdk/src/errors/FileNotExistsError'
 const fs = fsLib.promises
 
 const BROKER_URL = process.env.BROKER_URL
@@ -18,6 +18,10 @@ beforeEach(async function () {
 })
 
 describe('read', function () {
+    it('TODO: gets an appropriate error if file not exists', async function() {
+        // TODO: Uncomment below
+        // await assert.rejects(sdk.readFile('a/random/file.x'), FileNotExistsError)
+    })
     it('TODO: can read what has been saved', async function () {
         const CONTENT = "some-content"
         const PATH = "somefile.txt"
