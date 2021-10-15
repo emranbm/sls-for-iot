@@ -11,6 +11,7 @@ import { TimeoutError } from "./errors/TimeoutError"
 import logger, { setClientIdForLogs } from "./logger"
 import { IFileInfoRepository } from './fileInfoRepo/IFileInfoRepository';
 import { InMemoryFileInfoRepo } from './fileInfoRepo/InMemoryFileInfoRepo';
+import { FileExistsError } from './errors/FileExistsError';
 
 const HEART_BEAT_INTERVAL = 10000
 const SAVE_ATTEMPT_TIMEOUT = 10000
@@ -82,6 +83,9 @@ export class SlsSdk {
         this.checkStarted()
         if (this.currentSaveAttempt !== null)
             throw new ConcurrentSaveError()
+        for (const fileInfo of this.fileInfoRepo.getFileInfos(this.clientId))
+            if (fileInfo.virtualPath === virtualPath)
+                throw new FileExistsError()
         this.currentSaveAttempt = {
             saveRequestId: Math.random().toString(),
             file: {

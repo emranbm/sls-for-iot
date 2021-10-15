@@ -47,14 +47,13 @@ describe('save', function () {
             assert.fail("The saved file did not found in any client!")
         assert.equal(savedContent.toString(), CONTENT)
     });
-    it("TODO: file overwrite should be prevented", async function () {
+    it("file overwrite should be prevented", async function () {
         const CONTENT = "some-content"
         const NEW_CONTENT = "some-new-content"
         const PATH = "somefile.txt"
         await sdk.start()
         await sdk.saveFile(CONTENT, PATH)
 
-        // TODO: switch to assert.rejects
-        await assert.doesNotReject(sdk.saveFile(NEW_CONTENT, PATH), FileExistsError)
+        await assert.rejects(sdk.saveFile(NEW_CONTENT, PATH), FileExistsError)
     });
 });
