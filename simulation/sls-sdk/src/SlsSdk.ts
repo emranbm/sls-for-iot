@@ -3,7 +3,7 @@ import { AsyncMqttClient } from "async-mqtt"
 import * as diskusage from "diskusage"
 import { promises as fs } from 'fs'
 import { ManagedTimedPromise, MessageUtils, Topics } from 'sls-shared-utils'
-import { ClientTopics, MqttSubscribeManager } from 'sls-shared-utils';
+import { ClientTopics, MqttSubscribeManager, ArrayUtils } from 'sls-shared-utils';
 import { ConcurrentSaveError } from "./errors/ConcurrentSaveError"
 import { SaveError } from "./errors/SaveError"
 import { SdkNotStartedError } from './errors/SdkNotStartedError';
@@ -13,9 +13,11 @@ import { InMemoryFileInfoRepo } from './fileInfoRepo/InMemoryFileInfoRepo';
 import { FileExistsError } from './errors/FileExistsError';
 import { FileNotExistsError } from './errors/FileNotExistsError';
 import { SaveAttemptInfo } from "./SaveAttemptInfo"
+import { ReadAttemptInfo } from "./ReadAttemptInfo"
 
 const HEART_BEAT_INTERVAL = 10000
 const SAVE_ATTEMPT_TIMEOUT = 10000
+const READ_ATTEMPT_TIMEOUT = 10000
 
 export class SlsSdk {
     private mqttClient: AsyncMqttClient = null
@@ -26,6 +28,7 @@ export class SlsSdk {
     private messageUtils: MessageUtils
     private clientTopics: ClientTopics
     private currentSaveAttempt: SaveAttemptInfo = null
+    private currentReadAttempts: ReadAttemptInfo[] = []
     private fileInfoRepo: IFileInfoRepository
 
     constructor(brokerUrl: string,
@@ -51,6 +54,8 @@ export class SlsSdk {
         await subscribeManager.subscribe(this.clientTopics.findSaveHostResponse, this.handleFindSaveHostResponse)
         await subscribeManager.subscribe(this.clientTopics.save, this.handleSaveRequest)
         await subscribeManager.subscribe(this.clientTopics.saveResponse, this.handleSaveResponse)
+        await subscribeManager.subscribe(this.clientTopics.read, this.handleReadRequest)
+        await subscribeManager.subscribe(this.clientTopics.readResponse, this.handleReadResponse)
         await this.sendHeartBeat()
         setInterval(() => {
             if (this.isSending)
@@ -101,22 +106,31 @@ export class SlsSdk {
             requestId: this.currentSaveAttempt.saveRequestId
         }
         await this.messageUtils.sendMessage(Topics.manager.findSaveHostRequest, msg)
-        this.currentSaveAttempt.managedPromise = this.createSavePromise()
+        this.currentSaveAttempt.managedPromise = new ManagedTimedPromise<void>(SAVE_ATTEMPT_TIMEOUT)
+        this.currentSaveAttempt.managedPromise.catch(() => this.currentSaveAttempt = null)
         return this.currentSaveAttempt.managedPromise.promise
-    }
-
-    private createSavePromise(): ManagedTimedPromise<void> {
-        const p = new ManagedTimedPromise<void>(SAVE_ATTEMPT_TIMEOUT)
-        this.currentSaveAttempt.managedPromise = p
-        p.catch(() => this.currentSaveAttempt = null)
-        return p
     }
 
     public async readFile(virtualPath: string): Promise<string> {
         this.checkStarted()
-        if (!this.fileInfoRepo.getFileInfo(this.clientId, virtualPath))
+        const fileInfo = this.fileInfoRepo.getFileInfo(this.clientId, virtualPath)
+        if (!fileInfo)
             throw new FileNotExistsError()
-        throw new Error("Not implemented!")
+        const readAttemptInfo: ReadAttemptInfo = {
+            readRequestId: Math.random().toString(),
+            virtualPath: virtualPath,
+            managedPromise: new ManagedTimedPromise<string>(READ_ATTEMPT_TIMEOUT)
+        }
+        this.currentReadAttempts.push(readAttemptInfo)
+        const attemptRemoveFunc = () => { ArrayUtils.remove(this.currentReadAttempts, readAttemptInfo) }
+        readAttemptInfo.managedPromise.then(attemptRemoveFunc, attemptRemoveFunc)
+        const readReqestMsg: ReadFileRequestMsg = {
+            clientId: this.clientId,
+            requestId: readAttemptInfo.readRequestId,
+            virtualPath: virtualPath
+        }
+        await this.messageUtils.sendMessage(Topics.client(fileInfo.hostClientId).read, readReqestMsg)
+        return readAttemptInfo.managedPromise.promise
     }
 
     public async listFiles(): Promise<string[]> {
@@ -143,8 +157,12 @@ export class SlsSdk {
         await this.messageUtils.sendMessage(Topics.client(msg.clientInfo.clientId).save, saveMsg)
     }
 
+    private getClientDir(clientId: string): string {
+        return `${this.storageRoot}/${clientId}`
+    }
+
     private async handleSaveRequest(msg: SaveRequestMsg) {
-        const clientDir = `${this.storageRoot}/${msg.clientId}`
+        const clientDir = this.getClientDir(msg.clientId)
         await fs.mkdir(clientDir, { recursive: true })
         await fs.writeFile(`${clientDir}/${msg.file.virtualPath}`, msg.file.content)
         this.fileInfoRepo.addFile(msg.clientId, msg.file)
@@ -175,5 +193,34 @@ export class SlsSdk {
         } else
             this.currentSaveAttempt.managedPromise.doReject(new SaveError(JSON.stringify(msg)))
         this.currentSaveAttempt = null
+    }
+
+    private async handleReadRequest(msg: ReadFileRequestMsg) {
+        const fileInfo = this.fileInfoRepo.getFileInfo(msg.clientId, msg.virtualPath)
+        const respMsg: ReadFileResponseMsg = {
+            clientId: this.clientId,
+            requestId: msg.requestId,
+            file: null
+        }
+        if (fileInfo) {
+            const content = await fs.readFile(`${this.getClientDir(fileInfo.hostClientId)}/${fileInfo.virtualPath}`)
+            respMsg.file = {
+                ...fileInfo,
+                content: content.toString()
+            }
+        }
+        await this.messageUtils.sendMessage(Topics.client(msg.clientId).readResponse, respMsg)
+    }
+
+    private async handleReadResponse(msg: ReadFileResponseMsg) {
+        const readAttemptInfo = ArrayUtils.find(this.currentReadAttempts, i => i.readRequestId === msg.requestId)
+        if (!readAttemptInfo){
+            logger.warning(`An orphaned read response received. Request ID: ${msg.requestId}`)
+            return
+        }
+        if (!msg.file)
+            readAttemptInfo.managedPromise.doReject(new FileNotExistsError())
+        else
+            readAttemptInfo.managedPromise.doResolve(msg.file.content)
     }
 }

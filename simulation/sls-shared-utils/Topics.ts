@@ -8,6 +8,8 @@ export class ClientTopics {
     public get save() { return `${this.baseTopic}/save` }
     public get saveResponse() { return `${this.baseTopic}/save-response` }
     public get findSaveHostResponse() { return `${this.baseTopic}/find-save-host-response` }
+    public get read() { return `${this.baseTopic}/read` }
+    public get readResponse() { return `${this.baseTopic}/read-response` }
 }
 
 export class ManagerTopics {

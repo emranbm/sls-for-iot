@@ -21,12 +21,11 @@ describe('read', function () {
     it('gets an appropriate error if file not exists', async function() {
         await assert.rejects(sdk.readFile('a/random/file.x'), FileNotExistsError)
     })
-    it('TODO: can read what has been saved', async function () {
+    it('can read what has been saved', async function () {
         const CONTENT = "some-content"
         const PATH = "somefile.txt"
         await sdk.saveFile(CONTENT, PATH)
-        // TODO: Uncomment below
-        // const savedContent = await sdk.readFile(PATH)
-        // assert.equal(savedContent.toString(), CONTENT)
+        const savedContent = await sdk.readFile(PATH)
+        assert.equal(savedContent, CONTENT)
     });
 });

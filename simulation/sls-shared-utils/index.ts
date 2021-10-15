@@ -1,4 +1,5 @@
 export { Topics, ClientTopics, ManagerTopics } from './Topics';
+export { ArrayUtils } from './ArrayUtils';
 export { ManagedTimedPromise } from './ManagedTimedPromise';
 export { TimeoutError } from './TimeoutError';
 export { ManagedPromise } from './ManagedPromise';

@@ -35,7 +35,7 @@ But it should be tested whether it's worth doing computation over IO.
 1. **Optimize heartbeats:** Consider any message from clients as a heartbeat. So the client can send the heartbeats less frequently.
 1. **Don't keep content in memory:** Currently, the SDK holds file contents in memory before saving. It should also support other forms like file handles, etc.
 1. **Remove SLS manager:** SLS manager can be omitted! Its only usage is the clients' book-keeping, which can be handled between the clients themselves. i.e. clients can subscribe for the heartbeats in a general channel and keep track of the others health.
-1. **Optimize local saves:** Don't loop back content through the network when it should be saved locally.
+1. **Optimize local operations:** Don't loop back content through the network when it should be handled locally.
 1. **Disk-based `FileInfoRepo`:** Keep file infos in disk instead of memory.
 
 ## Future Work
