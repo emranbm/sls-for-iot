@@ -86,7 +86,7 @@ export class SlsSdk {
             saveRequestId: Math.random().toString(),
             file: {
                 content,
-                name: virtualPath,
+                virtualPath,
                 ownerClientId: this.clientId
             },
             fulfilled: false
@@ -144,7 +144,7 @@ export class SlsSdk {
     private async handleSaveRequest(msg: SaveRequestMsg) {
         const clientDir = `${this.storageRoot}/${msg.clientId}`
         await fs.mkdir(clientDir, { recursive: true })
-        await fs.writeFile(`${clientDir}/${msg.file.name}`, msg.file.content)
+        await fs.writeFile(`${clientDir}/${msg.file.virtualPath}`, msg.file.content)
         let respMsg: SaveResponseMsg = {
             clientId: this.clientId,
             requestId: msg.requestId,

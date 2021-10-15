@@ -10,14 +10,14 @@ export class InMemoryFileInfoRepo implements IFileInfoRepository {
         files.push(file)
         this.repo.set(clientId, files)
     }
-    removeFile(clientId: string, path: string): boolean {
+    removeFile(clientId: string, virtualPath: string): boolean {
         let files: FileInfo[] = this.repo.get(clientId)
         if (!files)
             return false
         const newFiles = []
         let removed = false
         for (let f of files)
-            if (f.name !== path)
+            if (f.virtualPath !== virtualPath)
                 newFiles.push(f)
             else
                 removed = true
