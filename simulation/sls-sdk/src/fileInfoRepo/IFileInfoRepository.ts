@@ -1,5 +1,5 @@
 export interface IFileInfoRepository {
-    addFile(clientId: string, file: FileInfo): void;
-    removeFile(clientId: string, virtualPath: string): boolean;
-    getFileInfos(clientId: string): FileInfo[];
+    addFile(ownerClientId: string, file: FileInfo): void;
+    removeFile(ownerClientId: string, virtualPath: string): boolean;
+    getFileInfos(ownerClientId: string): FileInfo[];
 }

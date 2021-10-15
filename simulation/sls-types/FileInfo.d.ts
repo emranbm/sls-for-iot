@@ -1,5 +1,5 @@
 type FileInfo = {
     virtualPath: string,
-    ownerClientId: string,
+    hostClientId?: string,
     expireAt?: Date
 }

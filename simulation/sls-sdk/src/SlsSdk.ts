@@ -91,7 +91,6 @@ export class SlsSdk {
             file: {
                 content,
                 virtualPath,
-                ownerClientId: this.clientId
             },
             fulfilled: false
         }
@@ -137,6 +136,7 @@ export class SlsSdk {
             this.currentSaveAttempt.reject(new SaveError(msg.description))
             return
         }
+        this.currentSaveAttempt.file.hostClientId = msg.clientInfo.clientId
         const saveMsg: SaveRequestMsg = {
             requestId: msg.requestId,
             clientId: this.clientId,

@@ -3,15 +3,15 @@ import { IFileInfoRepository } from "./IFileInfoRepository";
 export class InMemoryFileInfoRepo implements IFileInfoRepository {
     private repo: Map<string, FileInfo[]> = new Map()
 
-    addFile(clientId: string, file: FileInfo): void {
-        let files: FileInfo[] = this.repo.get(clientId)
+    addFile(ownerClientId: string, file: FileInfo): void {
+        let files: FileInfo[] = this.repo.get(ownerClientId)
         if (!files)
             files = []
         files.push(file)
-        this.repo.set(clientId, files)
+        this.repo.set(ownerClientId, files)
     }
-    removeFile(clientId: string, virtualPath: string): boolean {
-        let files: FileInfo[] = this.repo.get(clientId)
+    removeFile(ownerClientId: string, virtualPath: string): boolean {
+        let files: FileInfo[] = this.repo.get(ownerClientId)
         if (!files)
             return false
         const newFiles = []
@@ -23,8 +23,8 @@ export class InMemoryFileInfoRepo implements IFileInfoRepository {
                 removed = true
         return removed
     }
-    getFileInfos(clientId: string): FileInfo[] {
-        return this.repo.get(clientId) ?? []
+    getFileInfos(ownerClientId: string): FileInfo[] {
+        return this.repo.get(ownerClientId) ?? []
     }
 
 }
