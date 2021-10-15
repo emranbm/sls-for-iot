@@ -6,3 +6,4 @@
 /// <reference path="ClientInfo.d.ts" />
 /// <reference path="FileObject.d.ts" />
 /// <reference path="FileInfo.d.ts" />
+/// <reference path="FileMessage.d.ts" />
