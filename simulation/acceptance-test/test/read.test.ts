@@ -18,9 +18,8 @@ beforeEach(async function () {
 })
 
 describe('read', function () {
-    it('TODO: gets an appropriate error if file not exists', async function() {
-        // TODO: Uncomment below
-        // await assert.rejects(sdk.readFile('a/random/file.x'), FileNotExistsError)
+    it('gets an appropriate error if file not exists', async function() {
+        await assert.rejects(sdk.readFile('a/random/file.x'), FileNotExistsError)
     })
     it('TODO: can read what has been saved', async function () {
         const CONTENT = "some-content"

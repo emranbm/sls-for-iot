@@ -12,6 +12,7 @@ import logger, { setClientIdForLogs } from "./logger"
 import { IFileInfoRepository } from './fileInfoRepo/IFileInfoRepository';
 import { InMemoryFileInfoRepo } from './fileInfoRepo/InMemoryFileInfoRepo';
 import { FileExistsError } from './errors/FileExistsError';
+import { FileNotExistsError } from './errors/FileNotExistsError';
 
 const HEART_BEAT_INTERVAL = 10000
 const SAVE_ATTEMPT_TIMEOUT = 10000
@@ -118,6 +119,8 @@ export class SlsSdk {
 
     public async readFile(virtualPath: string): Promise<string> {
         this.checkStarted()
+        if (!this.fileInfoRepo.hasFile(this.clientId, virtualPath))
+            throw new FileNotExistsError()
         throw new Error("Not implemented!")
     }
 
