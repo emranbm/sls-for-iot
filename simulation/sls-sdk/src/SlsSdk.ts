@@ -138,6 +138,7 @@ export class SlsSdk {
         await fs.mkdir(clientDir, { recursive: true })
         await fs.writeFile(`${clientDir}/${msg.file.name}`, msg.file.content)
         let respMsg: SaveResponseMsg = {
+            clientId: this.clientId,
             requestId: msg.requestId,
             saved: true
         }
