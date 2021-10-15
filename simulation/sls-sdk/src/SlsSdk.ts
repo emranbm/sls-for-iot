@@ -122,8 +122,7 @@ export class SlsSdk {
             managedPromise: new ManagedTimedPromise<string>(READ_ATTEMPT_TIMEOUT)
         }
         this.currentReadAttempts.push(readAttemptInfo)
-        const attemptRemoveFunc = () => { ArrayUtils.remove(this.currentReadAttempts, readAttemptInfo) }
-        readAttemptInfo.managedPromise.then(attemptRemoveFunc, attemptRemoveFunc)
+        readAttemptInfo.managedPromise.onFulfilled(() => { ArrayUtils.remove(this.currentReadAttempts, readAttemptInfo) })
         const readReqestMsg: ReadFileRequestMsg = {
             clientId: this.clientId,
             requestId: readAttemptInfo.readRequestId,

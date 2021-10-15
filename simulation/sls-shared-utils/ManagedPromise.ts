@@ -54,6 +54,10 @@ export class ManagedPromise<T> {
         return this.promise.catch(onrejected)
     }
 
+    public onFulfilled(callback) {
+        return this.then(callback, callback)
+    }
+
     private checkNotFulfilled(): void {
         if (this.fulfilled)
             throw new AlreadyFulfilledError()
