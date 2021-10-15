@@ -145,6 +145,7 @@ export class SlsSdk {
         const clientDir = `${this.storageRoot}/${msg.clientId}`
         await fs.mkdir(clientDir, { recursive: true })
         await fs.writeFile(`${clientDir}/${msg.file.virtualPath}`, msg.file.content)
+        this.fileInfoRepo.addFile(msg.clientId, msg.file)
         let respMsg: SaveResponseMsg = {
             clientId: this.clientId,
             requestId: msg.requestId,
@@ -167,7 +168,7 @@ export class SlsSdk {
             return
         }
         if (msg.saved) {
-            this.fileInfoRepo.addFile(msg.clientId, this.currentSaveAttempt.file)
+            this.fileInfoRepo.addFile(this.clientId, this.currentSaveAttempt.file)
             this.currentSaveAttempt.resolve()
         } else
             this.currentSaveAttempt.reject(new SaveError(JSON.stringify(msg)))
