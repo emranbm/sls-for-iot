@@ -14,13 +14,13 @@ let sdk: SlsSdk = null
 beforeEach(async function () {
     await fs.rm(STORAGE_ROOT,{recursive: true, force: true})
     sdk = new SlsSdk(BROKER_URL, TEST_CLIENT_ID, STORAGE_ROOT_MAIN, "info")
+    await sdk.start()
 })
 
 describe('read', function () {
     it('TODO: can read what has been saved', async function () {
         const CONTENT = "some-content"
         const PATH = "somefile.txt"
-        await sdk.start()
         await sdk.saveFile(CONTENT, PATH)
         // TODO: Uncomment below
         // const savedContent = await sdk.readFile(PATH)
