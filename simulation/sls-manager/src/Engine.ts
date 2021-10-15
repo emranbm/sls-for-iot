@@ -3,8 +3,8 @@ import { Client } from "./clientRepo/Client";
 import { Topics, MessageUtils, MqttSubscribeManager } from 'sls-shared-utils';
 import { IClientRepository } from './clientRepo/IClientRepository';
 import { InMemoryClientRepo } from './clientRepo/InMemoryClientRepo';
-import { IFileInfoRepository } from './fileObjectRepo/IFileInfoRepository';
-import { InMemoryFileInfoRepo } from './fileObjectRepo/InMemoryFileInfoRepo';
+import { IFileInfoRepository } from './fileInfoRepo/IFileInfoRepository';
+import { InMemoryFileInfoRepo } from './fileInfoRepo/InMemoryFileInfoRepo';
 import { IFreeSpaceFinder } from './freeSpaceFinder/IFreeSpaceFinder';
 import { FirstFitFreeSpaceFinder } from './freeSpaceFinder/FirstFitFreeSpaceFinder';
 
