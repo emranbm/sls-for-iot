@@ -46,11 +46,12 @@ export class ManagedPromise<T> {
         return this._promise
     }
 
-    public then(
-        onfulfilled?: ((value: T) => T | PromiseLike<T>) | undefined | null,
-        onrejected?: ((reason: any) => T | PromiseLike<T>) | undefined | null
-    ) {
+    public then(onfulfilled, onrejected?) {
         return this.promise.then(onfulfilled, onrejected)
+    }
+
+    public catch(onrejected) {
+        return this.promise.catch(onrejected)
     }
 
     private checkNotFulfilled(): void {

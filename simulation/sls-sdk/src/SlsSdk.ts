@@ -2,19 +2,17 @@ import * as MQTT from "async-mqtt"
 import { AsyncMqttClient } from "async-mqtt"
 import * as diskusage from "diskusage"
 import { promises as fs } from 'fs'
-import { MessageUtils, Topics } from 'sls-shared-utils'
+import { ManagedTimedPromise, MessageUtils, Topics } from 'sls-shared-utils'
 import { ClientTopics, MqttSubscribeManager } from 'sls-shared-utils';
 import { ConcurrentSaveError } from "./errors/ConcurrentSaveError"
 import { SaveError } from "./errors/SaveError"
 import { SdkNotStartedError } from './errors/SdkNotStartedError';
-import { TimeoutError } from "./errors/TimeoutError"
 import logger, { setClientIdForLogs } from "./logger"
 import { IFileInfoRepository } from './fileInfoRepo/IFileInfoRepository';
 import { InMemoryFileInfoRepo } from './fileInfoRepo/InMemoryFileInfoRepo';
 import { FileExistsError } from './errors/FileExistsError';
 import { FileNotExistsError } from './errors/FileNotExistsError';
 import { SaveAttemptInfo } from "./SaveAttemptInfo"
-import { ManagedPromise } from 'sls-shared-utils';
 
 const HEART_BEAT_INTERVAL = 10000
 const SAVE_ATTEMPT_TIMEOUT = 10000
@@ -107,15 +105,10 @@ export class SlsSdk {
         return this.currentSaveAttempt.managedPromise.promise
     }
 
-    private createSavePromise(): ManagedPromise<void> {
-        const p = new ManagedPromise<void>()
+    private createSavePromise(): ManagedTimedPromise<void> {
+        const p = new ManagedTimedPromise<void>(SAVE_ATTEMPT_TIMEOUT)
         this.currentSaveAttempt.managedPromise = p
-        setTimeout(() => {
-            if (this.currentSaveAttempt !== null && !this.currentSaveAttempt.managedPromise.fulfilled) {
-                this.currentSaveAttempt.managedPromise.doReject(new TimeoutError(SAVE_ATTEMPT_TIMEOUT))
-                this.currentSaveAttempt = null
-            }
-        }, SAVE_ATTEMPT_TIMEOUT);
+        p.catch(() => this.currentSaveAttempt = null)
         return p
     }
 
