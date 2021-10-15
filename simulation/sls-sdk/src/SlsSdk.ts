@@ -9,6 +9,8 @@ import { SaveError } from "./errors/SaveError"
 import { SdkNotStartedError } from './errors/SdkNotStartedError';
 import { TimeoutError } from "./errors/TimeoutError"
 import logger, { setClientIdForLogs } from "./logger"
+import { IFileInfoRepository } from './fileInfoRepo/IFileInfoRepository';
+import { InMemoryFileInfoRepo } from './fileInfoRepo/InMemoryFileInfoRepo';
 
 const HEART_BEAT_INTERVAL = 10000
 const SAVE_ATTEMPT_TIMEOUT = 10000
@@ -22,13 +24,19 @@ export class SlsSdk {
     private messageUtils: MessageUtils
     private clientTopics: ClientTopics
     private currentSaveAttempt: SaveAttemptInfo = null
+    private fileInfoRepo: IFileInfoRepository
 
-    constructor(brokerUrl: string, clientId: string, storageRoot: string = './storage/', logLevel: string = "info") {
+    constructor(brokerUrl: string,
+        clientId: string,
+        storageRoot: string = './storage/',
+        logLevel: string = "info",
+        fileInfoRepo: IFileInfoRepository = new InMemoryFileInfoRepo()) {
         this.brokerUrl = brokerUrl
         this.clientId = clientId
         this.storageRoot = storageRoot
         this.clientTopics = Topics.client(clientId)
         logger.level = logLevel
+        this.fileInfoRepo = fileInfoRepo
         setClientIdForLogs(clientId)
     }
 
@@ -77,7 +85,7 @@ export class SlsSdk {
         this.currentSaveAttempt = {
             saveRequestId: Math.random().toString(),
             file: {
-            content,
+                content,
                 name: virtualPath,
                 ownerClientId: this.clientId
             },
@@ -158,9 +166,10 @@ export class SlsSdk {
             logger.warning("handleSaveResponse: Save request id doesn't match the one waiting for. It may be because of a late timed out response.")
             return
         }
-        if (msg.saved)
+        if (msg.saved) {
+            this.fileInfoRepo.addFile(msg.clientId, this.currentSaveAttempt.file)
             this.currentSaveAttempt.resolve()
-        else
+        } else
             this.currentSaveAttempt.reject(new SaveError(JSON.stringify(msg)))
         this.currentSaveAttempt = null
     }
