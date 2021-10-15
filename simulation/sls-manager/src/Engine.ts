@@ -3,8 +3,6 @@ import { Client } from "./clientRepo/Client";
 import { Topics, MessageUtils, MqttSubscribeManager } from 'sls-shared-utils';
 import { IClientRepository } from './clientRepo/IClientRepository';
 import { InMemoryClientRepo } from './clientRepo/InMemoryClientRepo';
-import { IFileInfoRepository } from './fileInfoRepo/IFileInfoRepository';
-import { InMemoryFileInfoRepo } from './fileInfoRepo/InMemoryFileInfoRepo';
 import { IFreeSpaceFinder } from './freeSpaceFinder/IFreeSpaceFinder';
 import { FirstFitFreeSpaceFinder } from './freeSpaceFinder/FirstFitFreeSpaceFinder';
 
@@ -13,17 +11,14 @@ export class Engine {
     private messageUtils: MessageUtils
     private clientRepo: IClientRepository
     private freeSpaceFinder: IFreeSpaceFinder
-    private fileInfoRepo: IFileInfoRepository
 
     constructor(mqttClient: AsyncMqttClient,
         clientRepo: IClientRepository = new InMemoryClientRepo(),
-        freeSpaceFinder: IFreeSpaceFinder = new FirstFitFreeSpaceFinder(),
-        fileInfoRepo: IFileInfoRepository = new InMemoryFileInfoRepo) {
+        freeSpaceFinder: IFreeSpaceFinder = new FirstFitFreeSpaceFinder()) {
         this.mqttClient = mqttClient
         this.messageUtils = new MessageUtils(mqttClient)
         this.clientRepo = clientRepo
         this.freeSpaceFinder = freeSpaceFinder
-        this.fileInfoRepo = fileInfoRepo
     }
 
     public async start() {
