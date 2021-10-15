@@ -47,7 +47,7 @@ describe('save', function () {
             assert.fail("The saved file did not found in any client!")
         assert.equal(savedContent.toString(), CONTENT)
     });
-    it("TODO: file update should be prevented", async function () {
+    it("TODO: file overwrite should be prevented", async function () {
         const CONTENT = "some-content"
         const NEW_CONTENT = "some-new-content"
         const PATH = "somefile.txt"
