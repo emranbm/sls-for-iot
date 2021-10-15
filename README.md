@@ -34,3 +34,4 @@ There are too many (if not infinite) cases to get optimized. Here is a memory of
 But it should be tested whether it's worth doing computation over IO.
 1. Consider any message from clients as a heartbeat. So the client can send the heartbeats less frequently.
 1. Currently, the SDK holds file contents in memory before saving. It should also support other forms like file handles, etc.
+1. SLS manager can be omitted! Its only usage is the clients' book-keeping, which can be handled between clients themselves. i.e. clients can subscribe for the heartbeats in a general channel and keep track of the others health.
