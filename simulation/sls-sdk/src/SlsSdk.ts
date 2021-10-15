@@ -86,6 +86,10 @@ export class SlsSdk {
             requestId: this.currentSaveAttempt.saveRequestId
         }
         await this.messageUtils.sendMessage(Topics.manager.findSaveHostRequest, msg)
+        return this.createSavePromise()
+    }
+
+    private createSavePromise(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this.currentSaveAttempt.resolve = resolve
             this.currentSaveAttempt.reject = reject
