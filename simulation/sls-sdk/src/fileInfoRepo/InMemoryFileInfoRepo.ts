@@ -24,7 +24,7 @@ export class InMemoryFileInfoRepo implements IFileInfoRepository {
         return removed
     }
     getFileInfos(clientId: string): FileInfo[] {
-        return this.repo.get(clientId)
+        return this.repo.get(clientId) ?? []
     }
 
 }
