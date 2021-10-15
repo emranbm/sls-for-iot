@@ -27,7 +27,7 @@ For the sake of simplicity and staying minimal, some assumptions are made by des
 1. Files are immutable. i.e. it's not possible to rewrite a file content; instead, it should be deleted first and created back with the new contents.
 1. The order of messages (of a specific type) sent from a single source to a single destination is guaranteed.
 
-## Optimization Opportunities
+## Enhancement Opportunities
 There are too many (if not infinite) cases to get optimized. Here is a memory of ones faced.
 1. **Optimize protocol:** More efficient serialization protocols can be used instead of JSON. e.g. [protobuf](https://developers.google.com/protocol-buffers)
 1. **Compress contents:** File contents can be compressed before transmission.  
@@ -36,6 +36,7 @@ But it should be tested whether it's worth doing computation over IO.
 1. **Don't keep content in memory:** Currently, the SDK holds file contents in memory before saving. It should also support other forms like file handles, etc.
 1. **Remove SLS manager:** SLS manager can be omitted! Its only usage is the clients' book-keeping, which can be handled between the clients themselves. i.e. clients can subscribe for the heartbeats in a general channel and keep track of the others health.
 1. **Optimize local saves:** Don't loop back content through the network when it should be saved locally.
+1. **Disk-based `FileInfoRepo`:** Keep file infos in disk instead of memory.
 
 ## Future Work
 1. Provide file overwrite.
