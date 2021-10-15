@@ -119,7 +119,7 @@ export class SlsSdk {
 
     public async readFile(virtualPath: string): Promise<string> {
         this.checkStarted()
-        if (!this.fileInfoRepo.hasFile(this.clientId, virtualPath))
+        if (!this.fileInfoRepo.getFileInfo(this.clientId, virtualPath))
             throw new FileNotExistsError()
         throw new Error("Not implemented!")
     }

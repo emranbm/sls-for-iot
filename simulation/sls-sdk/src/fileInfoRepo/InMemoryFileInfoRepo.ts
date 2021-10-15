@@ -26,10 +26,10 @@ export class InMemoryFileInfoRepo implements IFileInfoRepository {
     getFileInfos(ownerClientId: string): FileInfo[] {
         return this.repo.get(ownerClientId) ?? []
     }
-    hasFile(ownerClientId: string, virtualPath: string): boolean {
+    getFileInfo(ownerClientId: string, virtualPath: string): FileInfo {
         for (const f of this.getFileInfos(ownerClientId))
             if (f.virtualPath === virtualPath)
-                return true
-        return false
+                return f
+        return null
     }
 }
