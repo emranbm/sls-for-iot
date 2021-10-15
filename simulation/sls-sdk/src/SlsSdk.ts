@@ -13,6 +13,8 @@ import { IFileInfoRepository } from './fileInfoRepo/IFileInfoRepository';
 import { InMemoryFileInfoRepo } from './fileInfoRepo/InMemoryFileInfoRepo';
 import { FileExistsError } from './errors/FileExistsError';
 import { FileNotExistsError } from './errors/FileNotExistsError';
+import { SaveAttemptInfo } from "./SaveAttemptInfo"
+import { ManagedPromise } from 'sls-shared-utils';
 
 const HEART_BEAT_INTERVAL = 10000
 const SAVE_ATTEMPT_TIMEOUT = 10000
@@ -93,7 +95,7 @@ export class SlsSdk {
                 content,
                 virtualPath,
             },
-            fulfilled: false
+            managedPromise: null
         }
         let msg: FindSaveHostRequestMsg = {
             clientId: this.clientId,
@@ -101,20 +103,20 @@ export class SlsSdk {
             requestId: this.currentSaveAttempt.saveRequestId
         }
         await this.messageUtils.sendMessage(Topics.manager.findSaveHostRequest, msg)
-        return this.createSavePromise()
+        this.currentSaveAttempt.managedPromise = this.createSavePromise()
+        return this.currentSaveAttempt.managedPromise.promise
     }
 
-    private createSavePromise(): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.currentSaveAttempt.resolve = resolve
-            this.currentSaveAttempt.reject = reject
-            setTimeout(() => {
-                if (this.currentSaveAttempt !== null && !this.currentSaveAttempt.fulfilled) {
-                    this.currentSaveAttempt.reject(new TimeoutError(SAVE_ATTEMPT_TIMEOUT))
-                    this.currentSaveAttempt = null
-                }
-            }, SAVE_ATTEMPT_TIMEOUT);
-        })
+    private createSavePromise(): ManagedPromise<void> {
+        const p = new ManagedPromise<void>()
+        this.currentSaveAttempt.managedPromise = p
+        setTimeout(() => {
+            if (this.currentSaveAttempt !== null && !this.currentSaveAttempt.managedPromise.fulfilled) {
+                this.currentSaveAttempt.managedPromise.doReject(new TimeoutError(SAVE_ATTEMPT_TIMEOUT))
+                this.currentSaveAttempt = null
+            }
+        }, SAVE_ATTEMPT_TIMEOUT);
+        return p
     }
 
     public async readFile(virtualPath: string): Promise<string> {
@@ -136,7 +138,7 @@ export class SlsSdk {
 
     private async handleFindSaveHostResponse(msg: FindSaveHostResponseMsg) {
         if (!msg.canSave) {
-            this.currentSaveAttempt.reject(new SaveError(msg.description))
+            this.currentSaveAttempt.managedPromise.doReject(new SaveError(msg.description))
             return
         }
         this.currentSaveAttempt.file.hostClientId = msg.clientInfo.clientId
@@ -176,9 +178,9 @@ export class SlsSdk {
         }
         if (msg.saved) {
             this.fileInfoRepo.addFile(this.clientId, this.currentSaveAttempt.file)
-            this.currentSaveAttempt.resolve()
+            this.currentSaveAttempt.managedPromise.doResolve()
         } else
-            this.currentSaveAttempt.reject(new SaveError(JSON.stringify(msg)))
+            this.currentSaveAttempt.managedPromise.doReject(new SaveError(JSON.stringify(msg)))
         this.currentSaveAttempt = null
     }
 }
