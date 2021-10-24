@@ -34,7 +34,6 @@ jobs:
     name: Acceptance Test
     runs-on: ubuntu-20.04
     needs:
-      - build-simulation-services
       - test
     steps:
       - uses: actions/checkout@v2
