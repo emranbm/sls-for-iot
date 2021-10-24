@@ -1,5 +1,5 @@
 {
-    "spec": ["tsconfig.json", "test/**/*.ts"],
+    "spec": ["tsconfig.json", "test/**/*.test.ts"],
     "package": "package.json",
     "parallel": false,
     "exit": true
