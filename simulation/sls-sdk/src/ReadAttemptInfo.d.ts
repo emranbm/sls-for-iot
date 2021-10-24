@@ -1,4 +1,4 @@
-import { ManagedPromise } from "sls-shared-utils";
+import { ManagedPromise } from "./utils/ManagedPromise";
 
 type ReadAttemptInfo = {
     readRequestId: string,
