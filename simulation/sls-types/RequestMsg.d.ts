@@ -1,0 +1,3 @@
+type RequestMsg = {
+    requestId: string
+}

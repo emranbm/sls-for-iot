@@ -1,1 +1,1 @@
-type ReadFileResponseMsg = FileMessage
+type ReadFileResponseMsg = FileMessage & ResponseMsg

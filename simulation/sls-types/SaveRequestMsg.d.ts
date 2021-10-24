@@ -1,1 +1,1 @@
-type SaveRequestMsg = FileMessage
+type SaveRequestMsg = FileMessage & RequestMsg

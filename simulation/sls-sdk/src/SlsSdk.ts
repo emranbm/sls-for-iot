@@ -180,7 +180,7 @@ export class SlsSdk {
         this.fileInfoRepo.addFile(msg.clientId, msg.file)
         let respMsg: SaveResponseMsg = {
             clientId: this.clientId,
-            requestId: msg.requestId,
+            responseId: msg.requestId,
             saved: true
         }
         await this.messageHelper.sendMessage(Topics.client(msg.clientId).saveResponse, respMsg)
@@ -195,7 +195,7 @@ export class SlsSdk {
             logger.warning("handleSaveResponse: A save response received, but no save attempt is in progress! It may be because of a late timed out response.")
             return
         }
-        if (msg.requestId !== this.currentSaveAttempt?.saveRequestId) {
+        if (msg.responseId !== this.currentSaveAttempt?.saveRequestId) {
             logger.warning("handleSaveResponse: Save request id doesn't match the one waiting for. It may be because of a late timed out response.")
             return
         }
@@ -210,7 +210,7 @@ export class SlsSdk {
         const fileInfo = this.fileInfoRepo.getFileInfo(msg.clientId, msg.virtualPath)
         const respMsg: ReadFileResponseMsg = {
             clientId: this.clientId,
-            requestId: msg.requestId,
+            responseId: msg.requestId,
             file: null
         }
         if (fileInfo) {
@@ -224,9 +224,9 @@ export class SlsSdk {
     }
 
     private async handleReadResponse(msg: ReadFileResponseMsg) {
-        const readAttemptInfo = ArrayUtils.find(this.currentReadAttempts, i => i.readRequestId === msg.requestId)
+        const readAttemptInfo = ArrayUtils.find(this.currentReadAttempts, i => i.readRequestId === msg.responseId)
         if (!readAttemptInfo) {
-            logger.warning(`An orphaned read response received. Request ID: ${msg.requestId}`)
+            logger.warning(`An orphaned read response received. Response ID: ${msg.responseId}`)
             return
         }
         if (!msg.file)

@@ -1,4 +1,5 @@
-/// <reference path="RequestBoundMsg.d.ts" />
+/// <reference path="RequestMsg.d.ts" />
+/// <reference path="ResponseMsg.d.ts" />
 /// <reference path="HeartBeatMsg.d.ts" />
 /// <reference path="SaveRequestMsg.d.ts" />
 /// <reference path="SaveResponseMsg.d.ts" />

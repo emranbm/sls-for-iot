@@ -1,3 +1,4 @@
-type FileMessage = RequestBoundMsg & {
+type FileMessage = {
+    clientId: string,
     file: FileObject
 }
