@@ -161,6 +161,9 @@ export class SlsSdk {
 
     public async deleteFile(virtualPath: string): Promise<void> {
         this.checkStarted()
+        const fileInfo = this.fileInfoRepo.getFileInfo(this.clientId, virtualPath)
+        if (! fileInfo)
+            throw new FileNotExistsError()
         throw new Error("Not implemented!")
     }
 
