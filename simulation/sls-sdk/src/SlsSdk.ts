@@ -20,7 +20,6 @@ import { FirstFitFreeSpaceFinder } from "./freeSpaceFinder/FirstFitFreeSpaceFind
 import { ArrayUtils } from "./utils/ArrayUtils"
 import { ManagedTimedPromise } from "./utils/ManagedTimedPromise"
 import { MessageHelper } from "./utils/MessageHelper"
-import { MqttSubscribeManager } from "./utils/MqttSubscribeManager"
 import { ClientTopics, Topics } from "./utils/Topics"
 
 const HEART_BEAT_INTERVAL = 10000
@@ -67,14 +66,13 @@ export class SlsSdk {
     public async start() {
         logger.debug(`Connecting to broker at: ${this.brokerUrl}`)
         this.mqttClient = await MQTT.connectAsync(this.brokerUrl)
-        this.messageHelper = new MessageHelper(this.mqttClient)
+        this.messageHelper = new MessageHelper(this.mqttClient, this)
         await fs.mkdir(this.storageRoot, { recursive: true })
-        const subscribeManager = new MqttSubscribeManager(this.mqttClient, this)
-        await subscribeManager.subscribe(Topics.general.heartBeat, this.handleHeartBeat)
-        await subscribeManager.subscribe(this.clientTopics.save, this.handleSaveRequest)
-        await subscribeManager.subscribe(this.clientTopics.saveResponse, this.handleSaveResponse)
-        await subscribeManager.subscribe(this.clientTopics.read, this.handleReadRequest)
-        await subscribeManager.subscribe(this.clientTopics.readResponse, this.handleReadResponse)
+        await this.messageHelper.subscribe(Topics.general.heartBeat, this.handleHeartBeat)
+        await this.messageHelper.subscribe(this.clientTopics.save, this.handleSaveRequest)
+        await this.messageHelper.subscribe(this.clientTopics.saveResponse, this.handleSaveResponse)
+        await this.messageHelper.subscribe(this.clientTopics.read, this.handleReadRequest)
+        await this.messageHelper.subscribe(this.clientTopics.readResponse, this.handleReadResponse)
         await this.sendHeartBeat()
         setInterval(() => {
             if (this.isSending)
