@@ -14,6 +14,11 @@ import { FileExistsError } from './errors/FileExistsError';
 import { FileNotExistsError } from './errors/FileNotExistsError';
 import { SaveAttemptInfo } from "./SaveAttemptInfo"
 import { ReadAttemptInfo } from "./ReadAttemptInfo"
+import { IClientRepository } from "./clientRepo/IClientRepository"
+import { InMemoryClientRepo } from "./clientRepo/InMemoryClientRepo"
+import { Client } from "./clientRepo/Client"
+import { IFreeSpaceFinder } from "./freeSpaceFinder/IFreeSpaceFinder"
+import { FirstFitFreeSpaceFinder } from "./freeSpaceFinder/FirstFitFreeSpaceFinder"
 
 const HEART_BEAT_INTERVAL = 10000
 const SAVE_ATTEMPT_TIMEOUT = 10000
@@ -21,7 +26,7 @@ const READ_ATTEMPT_TIMEOUT = 10000
 
 export class SlsSdk {
     private mqttClient: AsyncMqttClient = null
-    private clientId: string
+    private _clientId: string
     private isSending: boolean = false
     private brokerUrl: string
     private storageRoot: string
@@ -30,19 +35,30 @@ export class SlsSdk {
     private currentSaveAttempt: SaveAttemptInfo = null
     private currentReadAttempts: ReadAttemptInfo[] = []
     private fileInfoRepo: IFileInfoRepository
+    private clientRepo: IClientRepository
+    private freeSpaceFinder: IFreeSpaceFinder
 
     constructor(brokerUrl: string,
         clientId: string,
         storageRoot: string = './storage/',
         logLevel: string = "info",
-        fileInfoRepo: IFileInfoRepository = new InMemoryFileInfoRepo()) {
+        fileInfoRepo: IFileInfoRepository = new InMemoryFileInfoRepo(),
+        clientRepo: IClientRepository = new InMemoryClientRepo(),
+        freeSpaceFinder: IFreeSpaceFinder = new FirstFitFreeSpaceFinder(),
+    ) {
         this.brokerUrl = brokerUrl
-        this.clientId = clientId
+        this._clientId = clientId
         this.storageRoot = storageRoot
         this.clientTopics = Topics.client(clientId)
         logger.level = logLevel
         this.fileInfoRepo = fileInfoRepo
+        this.clientRepo = clientRepo
+        this.freeSpaceFinder = freeSpaceFinder
         setClientIdForLogs(clientId)
+    }
+
+    public get clientId() {
+        return this._clientId
     }
 
     public async start() {
@@ -51,7 +67,7 @@ export class SlsSdk {
         this.messageUtils = new MessageUtils(this.mqttClient)
         await fs.mkdir(this.storageRoot, { recursive: true })
         const subscribeManager = new MqttSubscribeManager(this.mqttClient, this)
-        await subscribeManager.subscribe(this.clientTopics.findSaveHostResponse, this.handleFindSaveHostResponse)
+        await subscribeManager.subscribe(Topics.general.heartBeat, this.handleHeartBeat)
         await subscribeManager.subscribe(this.clientTopics.save, this.handleSaveRequest)
         await subscribeManager.subscribe(this.clientTopics.saveResponse, this.handleSaveResponse)
         await subscribeManager.subscribe(this.clientTopics.read, this.handleReadRequest)
@@ -81,7 +97,7 @@ export class SlsSdk {
             freeBytes: info.available,
             totalBytes: info.total
         }
-        await this.mqttClient.publish(Topics.manager.heartBeat, JSON.stringify(msg))
+        await this.mqttClient.publish(Topics.general.heartBeat, JSON.stringify(msg))
         this.isSending = false
     }
 
@@ -100,13 +116,17 @@ export class SlsSdk {
             },
             managedPromise: new ManagedTimedPromise<void>(SAVE_ATTEMPT_TIMEOUT)
         }
-        let msg: FindSaveHostRequestMsg = {
-            clientId: this.clientId,
-            neededBytes: Buffer.byteLength(content, 'utf-8'),
-            requestId: this.currentSaveAttempt.saveRequestId
-        }
-        await this.messageUtils.sendMessage(Topics.manager.findSaveHostRequest, msg)
         this.currentSaveAttempt.managedPromise.onFulfilled(() => this.currentSaveAttempt = null)
+        const clientInfo = this.freeSpaceFinder.findFreeClient(this.clientRepo, Buffer.byteLength(content, 'utf-8'))
+        if (!clientInfo)
+            throw new SaveError("No free client found!")
+        this.currentSaveAttempt.file.hostClientId = clientInfo.id
+        const saveMsg: SaveRequestMsg = {
+            requestId: this.currentSaveAttempt.saveRequestId,
+            clientId: this.clientId,
+            file: this.currentSaveAttempt.file
+        }
+        await this.messageUtils.sendMessage(Topics.client(clientInfo.id).save, saveMsg)
         return this.currentSaveAttempt.managedPromise.promise
     }
 
@@ -141,18 +161,8 @@ export class SlsSdk {
         throw new Error("Not implemented!")
     }
 
-    private async handleFindSaveHostResponse(msg: FindSaveHostResponseMsg) {
-        if (!msg.canSave) {
-            this.currentSaveAttempt.managedPromise.doReject(new SaveError(msg.description))
-            return
-        }
-        this.currentSaveAttempt.file.hostClientId = msg.clientInfo.clientId
-        const saveMsg: SaveRequestMsg = {
-            requestId: msg.requestId,
-            clientId: this.clientId,
-            file: this.currentSaveAttempt.file
-        }
-        await this.messageUtils.sendMessage(Topics.client(msg.clientInfo.clientId).save, saveMsg)
+    private handleHeartBeat(msg: HeartBeatMsg): void {
+        this.clientRepo.addOrUpdateClient(Client.fromHeartBeatMsg(msg))
     }
 
     private getClientDir(clientId: string): string {

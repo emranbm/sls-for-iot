@@ -1,15 +1,11 @@
 import * as assert from 'assert'
 import { SlsSdk } from 'sls-sdk'
-
-const BROKER_URL = process.env.BROKER_URL
-const STORAGE_ROOT = './clients-storages'
-const STORAGE_ROOT_MAIN = `./${STORAGE_ROOT}/main`
-const TEST_CLIENT_ID = "acceptance-test-client"
+import { Utils } from './Utils';
 
 let sdk: SlsSdk = null
 
 beforeEach(async function () {
-    sdk = new SlsSdk(BROKER_URL, TEST_CLIENT_ID, STORAGE_ROOT_MAIN, "info")
+    sdk = await Utils.prepareFreshEnvironment()
 })
 
 describe('delete', function () {
