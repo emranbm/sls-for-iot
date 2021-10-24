@@ -1,6 +1,6 @@
 import { AsyncMqttClient } from "async-mqtt";
 
-export class MessageUtils {
+export class MessageHelper {
     private mqttClient: AsyncMqttClient
 
     constructor(mqttClient: AsyncMqttClient) {

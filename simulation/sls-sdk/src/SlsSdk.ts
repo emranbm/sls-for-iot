@@ -19,7 +19,7 @@ import { IFreeSpaceFinder } from "./freeSpaceFinder/IFreeSpaceFinder"
 import { FirstFitFreeSpaceFinder } from "./freeSpaceFinder/FirstFitFreeSpaceFinder"
 import { ArrayUtils } from "./utils/ArrayUtils"
 import { ManagedTimedPromise } from "./utils/ManagedTimedPromise"
-import { MessageUtils } from "./utils/MessageUtils"
+import { MessageHelper } from "./utils/MessageHelper"
 import { MqttSubscribeManager } from "./utils/MqttSubscribeManager"
 import { ClientTopics, Topics } from "./utils/Topics"
 
@@ -33,7 +33,7 @@ export class SlsSdk {
     private isSending: boolean = false
     private brokerUrl: string
     private storageRoot: string
-    private messageUtils: MessageUtils
+    private messageHelper: MessageHelper
     private clientTopics: ClientTopics
     private currentSaveAttempt: SaveAttemptInfo = null
     private currentReadAttempts: ReadAttemptInfo[] = []
@@ -67,7 +67,7 @@ export class SlsSdk {
     public async start() {
         logger.debug(`Connecting to broker at: ${this.brokerUrl}`)
         this.mqttClient = await MQTT.connectAsync(this.brokerUrl)
-        this.messageUtils = new MessageUtils(this.mqttClient)
+        this.messageHelper = new MessageHelper(this.mqttClient)
         await fs.mkdir(this.storageRoot, { recursive: true })
         const subscribeManager = new MqttSubscribeManager(this.mqttClient, this)
         await subscribeManager.subscribe(Topics.general.heartBeat, this.handleHeartBeat)
@@ -129,7 +129,7 @@ export class SlsSdk {
             clientId: this.clientId,
             file: this.currentSaveAttempt.file
         }
-        await this.messageUtils.sendMessage(Topics.client(clientInfo.id).save, saveMsg)
+        await this.messageHelper.sendMessage(Topics.client(clientInfo.id).save, saveMsg)
         return this.currentSaveAttempt.managedPromise.promise
     }
 
@@ -150,7 +150,7 @@ export class SlsSdk {
             requestId: readAttemptInfo.readRequestId,
             virtualPath: virtualPath
         }
-        await this.messageUtils.sendMessage(Topics.client(fileInfo.hostClientId).read, readReqestMsg)
+        await this.messageHelper.sendMessage(Topics.client(fileInfo.hostClientId).read, readReqestMsg)
         return readAttemptInfo.managedPromise.promise
     }
 
@@ -185,7 +185,7 @@ export class SlsSdk {
             requestId: msg.requestId,
             saved: true
         }
-        await this.messageUtils.sendMessage(Topics.client(msg.clientId).saveResponse, respMsg)
+        await this.messageHelper.sendMessage(Topics.client(msg.clientId).saveResponse, respMsg)
     }
 
     private get anySaveAttemptInProgress(): boolean {
@@ -222,7 +222,7 @@ export class SlsSdk {
                 content: content.toString()
             }
         }
-        await this.messageUtils.sendMessage(Topics.client(msg.clientId).readResponse, respMsg)
+        await this.messageHelper.sendMessage(Topics.client(msg.clientId).readResponse, respMsg)
     }
 
     private async handleReadResponse(msg: ReadFileResponseMsg) {
