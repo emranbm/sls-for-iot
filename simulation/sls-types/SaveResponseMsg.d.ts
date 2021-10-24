@@ -1,6 +1,4 @@
-type SaveResponseMsg = {
-    clientId: string,
-    requestId: string,
+type SaveResponseMsg = RequestBoundMsg & {
     saved: boolean,
     description?: string
 }

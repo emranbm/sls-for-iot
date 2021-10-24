@@ -1,5 +1,3 @@
-type ReadFileRequestMsg = {
-    clientId: string,
-    requestId: string,
+type ReadFileRequestMsg = RequestBoundMsg & {
     virtualPath: string
 }
