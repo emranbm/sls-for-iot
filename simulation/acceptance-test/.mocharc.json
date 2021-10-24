@@ -1,6 +1,13 @@
 {
-    "spec": ["tsconfig.json", "test/**/*.test.ts"],
+    "spec": [
+        "tsconfig.json",
+        "test/**/*.test.ts"
+    ],
     "package": "package.json",
     "parallel": false,
-    "exit": true
+    "exit": true,
+    "extension": [
+        "ts"
+    ],
+    "require": "ts-node/register"
 }

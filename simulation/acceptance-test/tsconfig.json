@@ -6,6 +6,13 @@
         "outDir": "build",
         "rootDir": "test",
         "resolveJsonModule": true,
-        "types": ["node", "sls-types", "mocha"]
-    }
+        "types": [
+            "node",
+            "sls-types",
+            "mocha"
+        ]
+    },
+    "exclude": [
+        "node_modules"
+    ]
 }

@@ -22,14 +22,15 @@
   },
   "homepage": "https://github.com/emranbm/ms-project#readme",
   "dependencies": {
-    "ts-mocha": "^8.0.0",
-    "typescript": "^4.3.5",
-    "sls-sdk": "file:../sls-sdk"
+    "mocha": "9.1.3",
+    "sls-sdk": "file:../sls-sdk",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.3.5"
   },
   "devDependencies": {
     "@types/mocha": "^9.0.0",
     "@types/node": "^16.6.0",
-    "@types/sls-types": "file:../sls-types",
-    "@types/sls-sdk": "file:../sls-sdk"
+    "@types/sls-sdk": "file:../sls-sdk",
+    "@types/sls-types": "file:../sls-types"
   }
 }
