@@ -2,8 +2,6 @@ import * as MQTT from "async-mqtt"
 import { AsyncMqttClient } from "async-mqtt"
 import * as diskusage from "diskusage"
 import { promises as fs } from 'fs'
-import { ManagedTimedPromise, MessageUtils, Topics } from 'sls-shared-utils'
-import { ClientTopics, MqttSubscribeManager, ArrayUtils } from 'sls-shared-utils';
 import { ConcurrentSaveError } from "./errors/ConcurrentSaveError"
 import { SaveError } from "./errors/SaveError"
 import { SdkNotStartedError } from './errors/SdkNotStartedError';
@@ -19,6 +17,11 @@ import { InMemoryClientRepo } from "./clientRepo/InMemoryClientRepo"
 import { Client } from "./clientRepo/Client"
 import { IFreeSpaceFinder } from "./freeSpaceFinder/IFreeSpaceFinder"
 import { FirstFitFreeSpaceFinder } from "./freeSpaceFinder/FirstFitFreeSpaceFinder"
+import { ArrayUtils } from "./utils/ArrayUtils"
+import { ManagedTimedPromise } from "./utils/ManagedTimedPromise"
+import { MessageUtils } from "./utils/MessageUtils"
+import { MqttSubscribeManager } from "./utils/MqttSubscribeManager"
+import { ClientTopics, Topics } from "./utils/Topics"
 
 const HEART_BEAT_INTERVAL = 10000
 const SAVE_ATTEMPT_TIMEOUT = 10000
