@@ -9,7 +9,6 @@ import { IFileInfoRepository } from './fileInfoRepo/IFileInfoRepository';
 import { InMemoryFileInfoRepo } from './fileInfoRepo/InMemoryFileInfoRepo';
 import { FileExistsError } from './errors/FileExistsError';
 import { FileNotExistsError } from './errors/FileNotExistsError';
-import { SaveAttemptInfo } from "./SaveAttemptInfo"
 import { ReadAttemptInfo } from "./ReadAttemptInfo"
 import { IClientRepository } from "./clientRepo/IClientRepository"
 import { InMemoryClientRepo } from "./clientRepo/InMemoryClientRepo"
