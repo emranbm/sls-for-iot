@@ -122,12 +122,12 @@ export class SlsSdk {
         const fileInfo = this.fileInfoRepo.getFileInfo(this.clientId, virtualPath)
         if (!fileInfo)
             throw new FileNotExistsError()
-        const readReqestMsg: ReadFileRequestMsg = {
+        const readRequestMsg: ReadFileRequestMsg = {
             requestId: Math.random().toString(),
             clientId: this.clientId,
             virtualPath
         }
-        const response = <ReadFileResponseMsg>await this.messageHelper.sendRequest(Topics.client(fileInfo.hostClientId).read, readReqestMsg)
+        const response = <ReadFileResponseMsg>await this.messageHelper.sendRequest(Topics.client(fileInfo.hostClientId).read, readRequestMsg)
         if (!response.file)
             throw new FileNotExistsError()
         else
