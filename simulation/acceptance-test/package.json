@@ -23,6 +23,7 @@
   "homepage": "https://github.com/emranbm/ms-project#readme",
   "dependencies": {
     "mocha": "9.1.3",
+    "async-mqtt": "^2.6.1",
     "sls-sdk": "file:../sls-sdk",
     "ts-node": "^10.4.0",
     "typescript": "^4.3.5"
