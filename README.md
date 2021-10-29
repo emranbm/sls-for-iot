@@ -12,7 +12,7 @@ Here's my roadmap to get the project done. It's not fixed and is subject to chan
 - [ ] Design and semi-implement the shared storage
   - [x] Save file
   - [x] Read file
-  - [ ] Delete file -> Current State: Make request/response chain a managed promise (see the `stash` branch)
+  - [ ] Delete file -> Current State: Debug implemented delete functionality and pass its test (see the `stash` branch)
   - [ ] List files
 - [ ] Test and Benchmark
 - [ ] Revise the design and implementation, if needed
