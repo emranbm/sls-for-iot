@@ -9,19 +9,15 @@ import { IFileInfoRepository } from './fileInfoRepo/IFileInfoRepository';
 import { InMemoryFileInfoRepo } from './fileInfoRepo/InMemoryFileInfoRepo';
 import { FileExistsError } from './errors/FileExistsError';
 import { FileNotExistsError } from './errors/FileNotExistsError';
-import { ReadAttemptInfo } from "./ReadAttemptInfo"
 import { IClientRepository } from "./clientRepo/IClientRepository"
 import { InMemoryClientRepo } from "./clientRepo/InMemoryClientRepo"
 import { Client } from "./clientRepo/Client"
 import { IFreeSpaceFinder } from "./freeSpaceFinder/IFreeSpaceFinder"
 import { FirstFitFreeSpaceFinder } from "./freeSpaceFinder/FirstFitFreeSpaceFinder"
-import { ArrayUtils } from "./utils/ArrayUtils"
-import { ManagedTimedPromise } from "./utils/ManagedTimedPromise"
 import { MessageHelper } from "./utils/MessageHelper"
 import { ClientTopics, Topics } from "./utils/Topics"
 
 const HEART_BEAT_INTERVAL = 10000
-const READ_ATTEMPT_TIMEOUT = 10000
 
 export class SlsSdk {
     private mqttClient: AsyncMqttClient = null
@@ -31,7 +27,6 @@ export class SlsSdk {
     private storageRoot: string
     private messageHelper: MessageHelper
     private clientTopics: ClientTopics
-    private currentReadAttempts: ReadAttemptInfo[] = []
     private fileInfoRepo: IFileInfoRepository
     private clientRepo: IClientRepository
     private freeSpaceFinder: IFreeSpaceFinder
@@ -68,7 +63,7 @@ export class SlsSdk {
         await this.messageHelper.subscribe(this.clientTopics.save, this.handleSaveRequest)
         await this.messageHelper.subscribe(this.clientTopics.saveResponse)
         await this.messageHelper.subscribe(this.clientTopics.read, this.handleReadRequest)
-        await this.messageHelper.subscribe(this.clientTopics.readResponse, this.handleReadResponse)
+        await this.messageHelper.subscribe(this.clientTopics.readResponse)
         await this.sendHeartBeat()
         setInterval(() => {
             if (this.isSending)
@@ -127,20 +122,16 @@ export class SlsSdk {
         const fileInfo = this.fileInfoRepo.getFileInfo(this.clientId, virtualPath)
         if (!fileInfo)
             throw new FileNotExistsError()
-        const readAttemptInfo: ReadAttemptInfo = {
-            readRequestId: Math.random().toString(),
-            virtualPath: virtualPath,
-            managedPromise: new ManagedTimedPromise<string>(READ_ATTEMPT_TIMEOUT)
-        }
-        this.currentReadAttempts.push(readAttemptInfo)
-        readAttemptInfo.managedPromise.onFulfilled(() => { ArrayUtils.remove(this.currentReadAttempts, readAttemptInfo) })
         const readReqestMsg: ReadFileRequestMsg = {
+            requestId: Math.random().toString(),
             clientId: this.clientId,
-            requestId: readAttemptInfo.readRequestId,
-            virtualPath: virtualPath
+            virtualPath
         }
-        await this.messageHelper.sendMessage(Topics.client(fileInfo.hostClientId).read, readReqestMsg)
-        return readAttemptInfo.managedPromise.promise
+        const response = <ReadFileResponseMsg>await this.messageHelper.sendRequest(Topics.client(fileInfo.hostClientId).read, readReqestMsg)
+        if (!response.file)
+            throw new FileNotExistsError()
+        else
+            return response.file.content
     }
 
     public async listFiles(): Promise<string[]> {
@@ -192,17 +183,5 @@ export class SlsSdk {
             }
         }
         await this.messageHelper.sendMessage(Topics.client(msg.clientId).readResponse, respMsg)
-    }
-
-    private async handleReadResponse(msg: ReadFileResponseMsg) {
-        const readAttemptInfo = ArrayUtils.find(this.currentReadAttempts, i => i.readRequestId === msg.responseId)
-        if (!readAttemptInfo) {
-            logger.warning(`An orphaned read response received. Response ID: ${msg.responseId}`)
-            return
-        }
-        if (!msg.file)
-            readAttemptInfo.managedPromise.doReject(new FileNotExistsError())
-        else
-            readAttemptInfo.managedPromise.doResolve(msg.file.content)
     }
 }
