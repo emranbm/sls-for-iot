@@ -16,6 +16,7 @@ import { IFreeSpaceFinder } from "./freeSpaceFinder/IFreeSpaceFinder"
 import { FirstFitFreeSpaceFinder } from "./freeSpaceFinder/FirstFitFreeSpaceFinder"
 import { MessageHelper } from "./utils/MessageHelper"
 import { ClientTopics, Topics } from "./utils/Topics"
+import { DeleteError } from './errors/DeleteError';
 
 const HEART_BEAT_INTERVAL = 10000
 
@@ -64,6 +65,8 @@ export class SlsSdk {
         await this.messageHelper.subscribe(this.clientTopics.saveResponse)
         await this.messageHelper.subscribe(this.clientTopics.read, this.handleReadRequest)
         await this.messageHelper.subscribe(this.clientTopics.readResponse)
+        await this.messageHelper.subscribe(this.clientTopics.delete, this.handleDeleteRequest)
+        await this.messageHelper.subscribe(this.clientTopics.deleteResponse)
         await this.sendHeartBeat()
         setInterval(() => {
             if (this.isSending)
@@ -142,9 +145,16 @@ export class SlsSdk {
     public async deleteFile(virtualPath: string): Promise<void> {
         this.checkStarted()
         const fileInfo = this.fileInfoRepo.getFileInfo(this.clientId, virtualPath)
-        if (! fileInfo)
+        if (!fileInfo)
             throw new FileNotExistsError()
-        throw new Error("Not implemented!")
+        const deleteRequest: DeleteFileRequestMsg = {
+            clientId: this.clientId,
+            requestId: Math.random().toString(),
+            virtualPath
+        }
+        const response = <DeleteFileResponseMsg>await this.messageHelper.sendRequest(Topics.client(fileInfo.hostClientId).delete, deleteRequest)
+        if (!response.deleted)
+            throw new DeleteError(response.description)
     }
 
     private handleHeartBeat(msg: HeartBeatMsg): void {
@@ -183,5 +193,22 @@ export class SlsSdk {
             }
         }
         await this.messageHelper.sendMessage(Topics.client(msg.clientId).readResponse, respMsg)
+    }
+
+    private async handleDeleteRequest(msg: DeleteFileRequestMsg) {
+        const fileInfo = this.fileInfoRepo.getFileInfo(msg.clientId, msg.virtualPath)
+        const response: DeleteFileResponseMsg = {
+            clientId: this.clientId,
+            responseId: msg.requestId,
+            deleted: null
+        }
+        if (fileInfo) {
+            await fs.rm(`${this.getClientDir(this.clientId)}/${fileInfo.virtualPath}`)
+            response.deleted = true
+        } else {
+            response.deleted = false
+            response.description = "File not exists."
+        }
+        await this.messageHelper.sendMessage(Topics.client(msg.clientId).deleteResponse, response)
     }
 }
