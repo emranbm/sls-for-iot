@@ -19,7 +19,6 @@ import { ArrayUtils } from "./utils/ArrayUtils"
 import { ManagedTimedPromise } from "./utils/ManagedTimedPromise"
 import { MessageHelper } from "./utils/MessageHelper"
 import { ClientTopics, Topics } from "./utils/Topics"
-import { cli } from "winston/lib/winston/config"
 
 const HEART_BEAT_INTERVAL = 10000
 const READ_ATTEMPT_TIMEOUT = 10000
