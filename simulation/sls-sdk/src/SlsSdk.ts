@@ -2,7 +2,6 @@ import * as MQTT from "async-mqtt"
 import { AsyncMqttClient } from "async-mqtt"
 import * as diskusage from "diskusage"
 import { promises as fs } from 'fs'
-import { ConcurrentSaveError } from "./errors/ConcurrentSaveError"
 import { SaveError } from "./errors/SaveError"
 import { SdkNotStartedError } from './errors/SdkNotStartedError';
 import logger, { setClientIdForLogs } from "./logger"
@@ -21,9 +20,9 @@ import { ArrayUtils } from "./utils/ArrayUtils"
 import { ManagedTimedPromise } from "./utils/ManagedTimedPromise"
 import { MessageHelper } from "./utils/MessageHelper"
 import { ClientTopics, Topics } from "./utils/Topics"
+import { cli } from "winston/lib/winston/config"
 
 const HEART_BEAT_INTERVAL = 10000
-const SAVE_ATTEMPT_TIMEOUT = 10000
 const READ_ATTEMPT_TIMEOUT = 10000
 
 export class SlsSdk {
@@ -34,7 +33,6 @@ export class SlsSdk {
     private storageRoot: string
     private messageHelper: MessageHelper
     private clientTopics: ClientTopics
-    private currentSaveAttempt: SaveAttemptInfo = null
     private currentReadAttempts: ReadAttemptInfo[] = []
     private fileInfoRepo: IFileInfoRepository
     private clientRepo: IClientRepository
@@ -70,7 +68,7 @@ export class SlsSdk {
         await fs.mkdir(this.storageRoot, { recursive: true })
         await this.messageHelper.subscribe(Topics.general.heartBeat, this.handleHeartBeat)
         await this.messageHelper.subscribe(this.clientTopics.save, this.handleSaveRequest)
-        await this.messageHelper.subscribe(this.clientTopics.saveResponse, this.handleSaveResponse)
+        await this.messageHelper.subscribe(this.clientTopics.saveResponse)
         await this.messageHelper.subscribe(this.clientTopics.read, this.handleReadRequest)
         await this.messageHelper.subscribe(this.clientTopics.readResponse, this.handleReadResponse)
         await this.sendHeartBeat()
@@ -104,31 +102,26 @@ export class SlsSdk {
 
     public async saveFile(content: string, virtualPath: string): Promise<void> {
         this.checkStarted()
-        if (this.currentSaveAttempt !== null)
-            throw new ConcurrentSaveError()
         for (const fileInfo of this.fileInfoRepo.getFileInfos(this.clientId))
             if (fileInfo.virtualPath === virtualPath)
                 throw new FileExistsError()
-        this.currentSaveAttempt = {
-            saveRequestId: Math.random().toString(),
-            file: {
-                content,
-                virtualPath,
-            },
-            managedPromise: new ManagedTimedPromise<void>(SAVE_ATTEMPT_TIMEOUT)
-        }
-        this.currentSaveAttempt.managedPromise.onFulfilled(() => this.currentSaveAttempt = null)
         const clientInfo = this.freeSpaceFinder.findFreeClient(this.clientRepo, Buffer.byteLength(content, 'utf-8'))
         if (!clientInfo)
             throw new SaveError("No free client found!")
-        this.currentSaveAttempt.file.hostClientId = clientInfo.id
-        const saveMsg: SaveRequestMsg = {
-            requestId: this.currentSaveAttempt.saveRequestId,
+        const saveRequest: SaveRequestMsg = {
+            requestId: Math.random().toString(),
             clientId: this.clientId,
-            file: this.currentSaveAttempt.file
+            file: {
+                content,
+                virtualPath,
+                hostClientId: clientInfo.id
+            }
         }
-        await this.messageHelper.sendMessage(Topics.client(clientInfo.id).save, saveMsg)
-        return this.currentSaveAttempt.managedPromise.promise
+        const response = <SaveResponseMsg>await this.messageHelper.sendRequest(Topics.client(clientInfo.id).save, saveRequest)
+        if (response.saved) {
+            this.fileInfoRepo.addFile(this.clientId, saveRequest.file)
+        } else
+            throw new SaveError(JSON.stringify(response))
     }
 
     public async readFile(virtualPath: string): Promise<string> {
@@ -184,26 +177,6 @@ export class SlsSdk {
             saved: true
         }
         await this.messageHelper.sendMessage(Topics.client(msg.clientId).saveResponse, respMsg)
-    }
-
-    private get anySaveAttemptInProgress(): boolean {
-        return !!this.currentSaveAttempt
-    }
-
-    private async handleSaveResponse(msg: SaveResponseMsg) {
-        if (!this.anySaveAttemptInProgress) {
-            logger.warning("handleSaveResponse: A save response received, but no save attempt is in progress! It may be because of a late timed out response.")
-            return
-        }
-        if (msg.responseId !== this.currentSaveAttempt?.saveRequestId) {
-            logger.warning("handleSaveResponse: Save request id doesn't match the one waiting for. It may be because of a late timed out response.")
-            return
-        }
-        if (msg.saved) {
-            this.fileInfoRepo.addFile(this.clientId, this.currentSaveAttempt.file)
-            this.currentSaveAttempt.managedPromise.doResolve()
-        } else
-            this.currentSaveAttempt.managedPromise.doReject(new SaveError(JSON.stringify(msg)))
     }
 
     private async handleReadRequest(msg: ReadFileRequestMsg) {
