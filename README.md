@@ -26,6 +26,7 @@ Here's my roadmap to get the project done. It's not fixed and is subject to chan
 For the sake of simplicity and staying minimal, some assumptions are made by design. Here is a list of them.
 1. Files are immutable. i.e. it's not possible to rewrite a file content; instead, it should be deleted first and created back with the new contents.
 1. The order of messages (of a specific type) sent from a single source to a single destination is guaranteed.
+1. Files don't save in sub-directories but in the root of each client's (virtual) storage. i.e. it's not possible to save a file somewhere like `sub/dir/file.txt`, but `file.txt`. (See [issue #7](https://github.com/emranbm/sls-for-iot/issues/7) for more details)
 
 ## Enhancement Opportunities
 There are too many (if not infinite) cases to get optimized. Here is a memory of ones faced.
@@ -40,3 +41,4 @@ But it should be tested whether it's worth doing computation over IO.
 
 ## Future Work
 1. Provide file overwrite.
+1. Allow using sub-directories ([#7](https://github.com/emranbm/sls-for-iot/issues/7))
