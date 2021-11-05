@@ -1,4 +1,4 @@
-import * as assert from 'assert'
+import {strict as assert} from 'assert'
 import { SlsSdk } from 'sls-sdk'
 import { FileNotExistsError } from 'sls-sdk/src/errors/FileNotExistsError'
 import { Utils } from './Utils';

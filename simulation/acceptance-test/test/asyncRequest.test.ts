@@ -1,5 +1,5 @@
 import * as MQTT from "async-mqtt"
-import * as assert from "assert";
+import {strict as assert} from 'assert'
 import { MessageHelper } from 'sls-sdk/src/utils/MessageHelper';
 import { Utils } from './Utils';
 
