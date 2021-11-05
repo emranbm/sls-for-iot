@@ -19,6 +19,14 @@ describe('save', function () {
         const savedContent = await asyncfs.readFile(`${Utils.getStorageRootPath(sdk.clientId)}/${sdk.clientId}/${PATH}`)
         assert.equal(savedContent.toString(), CONTENT)
     });
+    // TODO: Issue #7
+    it.skip("can save on non-existing sub-directories", async function () {
+        const CONTENT = "some-content"
+        const PATH = "sub/dir/somefile.txt"
+        await sdk.saveFile(CONTENT, PATH)
+        const savedContent = await asyncfs.readFile(`${Utils.getStorageRootPath(sdk.clientId)}/${sdk.clientId}/${PATH}`)
+        assert.equal(savedContent.toString(), CONTENT)
+    })
     it('can save with multiple clients', async function () {
         const CONTENT = "some-content"
         const PATH = "somefile.txt"
