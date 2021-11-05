@@ -1,14 +1,17 @@
+import { strict as assert } from 'assert'
 import { IFileInfoRepository } from "./IFileInfoRepository";
 
 export class InMemoryFileInfoRepo implements IFileInfoRepository {
     private repo: Map<string, FileInfo[]> = new Map()
 
     addFile(ownerClientId: string, file: FileInfo): void {
-        let files: FileInfo[] = this.repo.get(ownerClientId)
-        if (!files)
-            files = []
+        const alreadyExistingFile = this.getFileInfo(ownerClientId, file.virtualPath)
+        if (alreadyExistingFile) {
+            assert.deepEqual(alreadyExistingFile, file)
+            return
+        }
+        let files = this.getFileInfos(ownerClientId)
         files.push(file)
-        this.repo.set(ownerClientId, files)
     }
     removeFile(ownerClientId: string, virtualPath: string): boolean {
         let files: FileInfo[] = this.repo.get(ownerClientId)
@@ -24,7 +27,12 @@ export class InMemoryFileInfoRepo implements IFileInfoRepository {
         return removed
     }
     getFileInfos(ownerClientId: string): FileInfo[] {
-        return this.repo.get(ownerClientId) ?? []
+        let fileInfos = this.repo.get(ownerClientId)
+        if (!fileInfos) {
+            fileInfos = []
+            this.repo.set(ownerClientId, fileInfos)
+        }
+        return fileInfos
     }
     getFileInfo(ownerClientId: string, virtualPath: string): FileInfo {
         for (const f of this.getFileInfos(ownerClientId))

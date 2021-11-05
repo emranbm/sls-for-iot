@@ -9,11 +9,11 @@ Here's my roadmap to get the project done. It's not fixed and is subject to chan
 - [x] Define the project
 - [x] Get the acceptance of the proposal
 - [x] Create a dockerized simulation environment
-- [ ] Design and semi-implement the shared storage
+- [x] Design and semi-implement the shared storage
   - [x] Save file
   - [x] Read file
   - [x] Delete file
-  - [ ] List files
+  - [x] List files
 - [ ] Test and Benchmark
 - [ ] Revise the design and implementation, if needed
 - [ ] Write down the paper

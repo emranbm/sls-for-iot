@@ -139,7 +139,9 @@ export class SlsSdk {
 
     public async listFiles(): Promise<string[]> {
         this.checkStarted()
-        throw new Error("Not implemented!")
+        const fileInfos = this.fileInfoRepo.getFileInfos(this.clientId)
+        const filePaths = fileInfos.map(f => f.virtualPath)
+        return filePaths
     }
 
     public async deleteFile(virtualPath: string): Promise<void> {
