@@ -9,3 +9,5 @@
 /// <reference path="FileMessage.d.ts" />
 /// <reference path="ReadFileRequestMsg.d.ts" />
 /// <reference path="ReadFileResponseMsg.d.ts" />
+/// <reference path="DeleteFileRequestMsg.d.ts" />
+/// <reference path="DeleteFileResponseMsg.d.ts" />

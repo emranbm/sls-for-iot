@@ -9,6 +9,8 @@ export class ClientTopics {
     public get saveResponse() { return `${this.baseTopic}/save-response` }
     public get read() { return `${this.baseTopic}/read` }
     public get readResponse() { return `${this.baseTopic}/read-response` }
+    public get delete() { return `${this.baseTopic}/delete` }
+    public get deleteResponse() { return `${this.baseTopic}/delete-response` }
 }
 
 export class GeneralTopics {
