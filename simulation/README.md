@@ -9,3 +9,5 @@ Here is a list of them:
 - iFogSim ([paper](http://dx.doi.org/10.1002/spe.2509))
 - EdgeCloudSim ([paper](http://dx.doi.org/10.1002/ett.3493))
 - IOTSim ([paper](http://dx.doi.org/10.1016/j.sysarc.2016.06.008))
+
+For more info and comparison, see Table1 of [this paper](../references/simulation-and-metrics/futureinternet-11-00235.pdf).
