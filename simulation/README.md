@@ -11,3 +11,6 @@ Here is a list of them:
 - IOTSim ([paper](http://dx.doi.org/10.1016/j.sysarc.2016.06.008))
 
 For more info and comparison, see Table1 of [this paper](../references/simulation-and-metrics/futureinternet-11-00235.pdf).
+
+## FogBed Simulator
+The [FogBed](https://github.com/fogbed/fogbed) simulator is a good implementation for what we need in evaluating SLS.
