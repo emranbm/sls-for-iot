@@ -1,0 +1,20 @@
+---
+name: "Publish SLS SDK to NPM registry"
+on:
+  workflow_dispatch:
+jobs:
+  publish:
+    name: Publish to NPM
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.9.1'
+          registry-url: 'https://registry.npmjs.org'
+      - working-directory: simulation/sls-sdk/
+        run: npm ci
+      - working-directory: simulation/sls-sdk/
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

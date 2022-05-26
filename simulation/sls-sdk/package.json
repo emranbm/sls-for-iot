@@ -1,6 +1,6 @@
 {
-  "name": "sls-client",
-  "version": "0.1.0",
+  "name": "sls-sdk",
+  "version": "0.1.1",
   "description": "",
   "main": "src/main.ts",
   "scripts": {
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/emranbm/ms-project.git"
+    "url": "git+https://github.com/emranbm/sls-for-iot.git"
   },
   "keywords": [
     "MQTT",
@@ -19,9 +19,9 @@
   "author": "Emran Batmanghelich",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/emranbm/ms-project/issues"
+    "url": "https://github.com/emranbm/sls-for-iot/issues"
   },
-  "homepage": "https://github.com/emranbm/ms-project#readme",
+  "homepage": "https://github.com/emranbm/sls-for-iot#readme",
   "dependencies": {
     "@types/node": "^16.6.1",
     "async-mqtt": "^2.6.1",
