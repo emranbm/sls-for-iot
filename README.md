@@ -15,6 +15,8 @@ Here's my roadmap to get the project done. It's not fixed and is subject to chan
   - [x] Delete file
   - [x] List files
 - [ ] Test and Benchmark
+  - [ ] Run FogBed simulation without SLS and note metrics (HDD usage, CPU usage, Memory usage, etc.)
+  - [ ] Run FogBed simulation with different scenarios of using SLS
 - [ ] Revise the design and implementation, if needed
 - [ ] Write down the paper
 - [ ] Create presentation
