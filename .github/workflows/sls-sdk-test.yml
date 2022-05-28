@@ -13,10 +13,10 @@ jobs:
         with:
           node-version: '16'
           cache: 'npm'
-          cache-dependency-path: simulation/sls-sdk/package-lock.json
-      - working-directory: simulation/sls-sdk/
+          cache-dependency-path: proof-of-concept/sls-sdk/package-lock.json
+      - working-directory: proof-of-concept/sls-sdk/
         run: npm install
-      - working-directory: simulation/sls-sdk/
+      - working-directory: proof-of-concept/sls-sdk/
         run: npm run test
   acceptance-test:
     name: Acceptance Test
@@ -30,11 +30,11 @@ jobs:
           node-version: '16.9.1'
           cache: 'npm'
           cache-dependency-path: |
-            simulation/sls-sdk/package-lock.json
-            simulation/acceptance-test/package-lock.json
-      - working-directory: simulation/sls-sdk/
+            proof-of-concept/sls-sdk/package-lock.json
+            proof-of-concept/acceptance-test/package-lock.json
+      - working-directory: proof-of-concept/sls-sdk/
         run: npm install
-      - working-directory: simulation/acceptance-test/
+      - working-directory: proof-of-concept/acceptance-test/
         run: npm install
-      - working-directory: simulation/acceptance-test/
+      - working-directory: proof-of-concept/acceptance-test/
         run: npm run test

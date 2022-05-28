@@ -12,9 +12,9 @@ jobs:
         with:
           node-version: '16.9.1'
           registry-url: 'https://registry.npmjs.org'
-      - working-directory: simulation/sls-sdk/
+      - working-directory: proof-of-concept/sls-sdk/
         run: npm ci
-      - working-directory: simulation/sls-sdk/
+      - working-directory: proof-of-concept/sls-sdk/
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
