@@ -1,0 +1,12 @@
+---
+name: "Sample device build"
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build-docker-image:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./simulation/sls-simulation/sample-device/build-docker-image.sh
