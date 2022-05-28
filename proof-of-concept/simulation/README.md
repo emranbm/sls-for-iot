@@ -1,5 +1,5 @@
-# SLS simulation
-Here the SLS SDK usage is simulated using the FogBed tool.
+# SLS usage simulation
+Here the SLS SDK usage is simulated using the [FogBed](https://github.com/fogbed/fogbed) tool.
 
 ## Usage
 The simulation structure is described in `main.py`. Execute `run.sh` to run start the simulation.

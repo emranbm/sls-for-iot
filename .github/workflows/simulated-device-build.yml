@@ -9,4 +9,4 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-      - run: ./proof-of-concept/sls-simulation/sample-device/build-docker-image.sh
+      - run: ./proof-of-concept/simulation/sample-device/build-docker-image.sh
