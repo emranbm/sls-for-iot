@@ -1,5 +1,5 @@
 ---
-name: "Sample device build"
+name: "Simulated device build"
 on:
   push:
     branches:

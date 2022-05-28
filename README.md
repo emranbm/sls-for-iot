@@ -1,5 +1,7 @@
 # Shared Local data Storage for IoT
-[![Master Pipeline](https://github.com/emranbm/sls-for-iot/workflows/Main%20Workflow/badge.svg?branch=master)](https://github.com/emranbm/sls-for-iot/actions/workflows/main.yml)
+[![SLS SDK test](https://github.com/emranbm/sls-for-iot/actions/workflows/sls-sdk-test.yml/badge.svg)](https://github.com/emranbm/sls-for-iot/actions/workflows/sls-sdk-test.yml)
+[![Simulated device build](https://github.com/emranbm/sls-for-iot/actions/workflows/simulated-device-build.yml/badge.svg)](https://github.com/emranbm/sls-for-iot/actions/workflows/simulated-device-build.yml)
+[![UML diagrams build](https://github.com/emranbm/sls-for-iot/actions/workflows/uml-diagrams-build.yml/badge.svg)](https://github.com/emranbm/sls-for-iot/actions/workflows/uml-diagrams-build.yml)
 
 A design for IoT devices to share their storage across a local network  
 It's my Master of Science project at [Sharif university of technology](http://www.sharif.ir/).
