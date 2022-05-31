@@ -7,3 +7,7 @@ For IDEs to be able to lint and type check the FogBed-provided classes and utili
 To prepare such an environment, just run the `download-fogbed-src.sh` script. It automatically downloads the required package and puts it in the appropriate location.  
 Note that the FogBed's `src` folder only helps development and is not needed for the simulation run.  
 For samples of simulation cases, see the current files in this directory.
+
+### Node object methods
+The `FogbedExperiment` class has a method named `get_node` which can retrieve a *mininet* node object.  
+For the list of available attributes of a mininet node object, see [here](http://mininet.org/api/classmininet_1_1node_1_1Node.html).  
