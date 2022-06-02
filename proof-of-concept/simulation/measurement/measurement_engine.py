@@ -4,6 +4,7 @@ from openpyxl import Workbook
 from openpyxl.worksheet.worksheet import Worksheet
 
 from metric_providers.memory_usage_provider import MemoryUsageProvider
+from metric_providers.metric_provider import MetricProvider
 from metric_providers.storage_usage_provider import StorageUsageProvider
 from metric_writer import MetricWriter
 
@@ -15,8 +16,8 @@ class MeasurementEngine:
         self.metric_writer = MetricWriter(container_names)
 
     def start(self):
-        storage_usages = StorageUsageProvider().retrieve_metric_values()
-        self.metric_writer.get_sheet_writer("Storage Usage").write_record(storage_usages)
-        memory_usages = MemoryUsageProvider().retrieve_metric_values()
-        self.metric_writer.get_sheet_writer("Memory Percentage").write_record(storage_usages)
+        for title, metric_provider_cls in MetricProvider.get_registered_metric_providers().items():
+            metric_provider = metric_provider_cls()
+            metric_values = metric_provider.retrieve_metric_values()
+            self.metric_writer.get_sheet_writer(title).write_record(metric_values)
         self.metric_writer.save(self._output_path)

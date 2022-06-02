@@ -6,6 +6,7 @@ from metric_providers.container_metric_value import ContainerMetricValue
 from metric_providers.metric_provider import MetricProvider
 
 
+@MetricProvider.register(title="Memory percentage")
 class MemoryUsageProvider(MetricProvider):
     def retrieve_metric_values(self) -> List[ContainerMetricValue]:
         cmd_output = subprocess.check_output([

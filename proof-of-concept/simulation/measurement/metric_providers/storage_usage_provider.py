@@ -6,6 +6,7 @@ from metric_providers.container_metric_value import ContainerMetricValue
 from metric_providers.metric_provider import MetricProvider
 
 
+@MetricProvider.register(title="Storage usage")
 class StorageUsageProvider(MetricProvider):
     def retrieve_metric_values(self) -> Iterable[ContainerMetricValue]:
         cmd_output = subprocess.check_output(['docker', 'ps', '--size', '--format', '{{json .}}']).decode('utf-8')
