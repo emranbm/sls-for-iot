@@ -10,7 +10,7 @@ arguments = None
 def main():
     inflate_arguments()
     StorageUsageProvider().retrieve_metric_values()
-    MeasurementEngine(arguments.containers).start()
+    MeasurementEngine(arguments.containers, "report.xlsx").start()
 
 
 def inflate_arguments():
