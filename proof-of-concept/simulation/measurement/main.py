@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 
 import argparse
+
 from measurement_engine import MeasurementEngine
-from metric_providers.storage_usage_provider import StorageUsageProvider
+from metric_providers.metric_provider import MetricProvider
 
 arguments = None
 
 
 def main():
     inflate_arguments()
+    MetricProvider.scan_for_providers()
     MeasurementEngine(arguments.containers, "report.xlsx").start()
 
 

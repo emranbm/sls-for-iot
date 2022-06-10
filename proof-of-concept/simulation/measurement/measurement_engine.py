@@ -1,11 +1,6 @@
 from typing import List
 
-from openpyxl import Workbook
-from openpyxl.worksheet.worksheet import Worksheet
-
-from metric_providers.memory_usage_provider import MemoryUsageProvider
 from metric_providers.metric_provider import MetricProvider
-from metric_providers.storage_usage_provider import StorageUsageProvider
 from metric_writer import MetricWriter
 
 

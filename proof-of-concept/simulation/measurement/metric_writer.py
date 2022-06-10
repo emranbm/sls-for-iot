@@ -1,4 +1,3 @@
-from itertools import chain
 from typing import Dict, Iterable, List
 
 from openpyxl import Workbook

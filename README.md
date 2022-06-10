@@ -19,7 +19,7 @@ Here's my roadmap to get the project done. It's not fixed and is subject to chan
 - [ ] Test and Benchmark
   - [ ] Run FogBed simulation without SLS and note metrics (HDD usage, CPU usage, Memory usage, etc.)
     - [ ] Design and implement measurement script.  
-    **Current State:** Add CPU metric provider.
+    **Current State:** Continuous measurement, instead of one-off task.
   - [ ] Run FogBed simulation with different scenarios of using SLS
 - [ ] Revise the design and implementation, if needed
 - [ ] Write down the paper
