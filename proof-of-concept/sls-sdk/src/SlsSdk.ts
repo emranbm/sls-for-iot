@@ -31,6 +31,7 @@ export class SlsSdk {
     private fileInfoRepo: IFileInfoRepository
     private clientRepo: IClientRepository
     private freeSpaceFinder: IFreeSpaceFinder
+    private maxAvailableBytes: number
 
     constructor(brokerUrl: string,
         clientId: string,
@@ -39,6 +40,7 @@ export class SlsSdk {
         fileInfoRepo: IFileInfoRepository = new InMemoryFileInfoRepo(),
         clientRepo: IClientRepository = new InMemoryClientRepo(),
         freeSpaceFinder: IFreeSpaceFinder = new FirstFitFreeSpaceFinder(),
+        maxAvailableBytes: number = Number.MAX_VALUE
     ) {
         this.brokerUrl = brokerUrl
         this._clientId = clientId
@@ -48,6 +50,7 @@ export class SlsSdk {
         this.fileInfoRepo = fileInfoRepo
         this.clientRepo = clientRepo
         this.freeSpaceFinder = freeSpaceFinder
+        this.maxAvailableBytes = maxAvailableBytes
         setClientIdForLogs(clientId)
     }
 
@@ -89,7 +92,7 @@ export class SlsSdk {
         const info = await diskusage.check(this.storageRoot)
         const msg: HeartBeatMsg = {
             clientId: this.clientId,
-            freeBytes: info.available,
+            freeBytes: Math.min(info.available, this.maxAvailableBytes),
             totalBytes: info.total
         }
         await this.mqttClient.publish(Topics.general.heartBeat, JSON.stringify(msg))

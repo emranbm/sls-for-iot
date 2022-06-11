@@ -10,4 +10,8 @@ For samples of simulation cases, see the current files in this directory.
 
 ### Node object methods
 The `FogbedExperiment` class has a method named `get_node` which can retrieve a *mininet* node object.  
-For the list of available attributes of a mininet node object, see [here](http://mininet.org/api/classmininet_1_1node_1_1Node.html).  
+For the list of available attributes of a mininet node object, see [here](http://mininet.org/api/classmininet_1_1node_1_1Node.html).
+
+### Containernet docs
+For the available features of underlying _containernet_ library (like parameters of the `add_docker` method), 
+see the [containernet documentation](https://github.com/containernet/containernet/wiki).  
