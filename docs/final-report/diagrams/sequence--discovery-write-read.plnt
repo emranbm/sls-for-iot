@@ -1,0 +1,23 @@
+@startuml
+Participant Device1 as d1
+Participant Device2 as d2
+
+group Discovery
+d1 -> d2 : heartbeat, storage state
+d2 -> d1 : heartbeat, storage state
+end
+
+group Save a file
+d1 -> d1 : new file
+d1 -> d1 : Find best place
+d1 -> d2 : path, file content
+d2 --> d1 : ack
+end
+
+group Read a file
+d1 -> d1 : read file
+d1 -> d1 : find path location
+d1 -> d2 : path
+d2 --> d1 : file content
+end
+@enduml

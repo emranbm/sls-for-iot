@@ -12,8 +12,8 @@ jobs:
       options: '--entrypoint ""'
     steps:
       - uses: actions/checkout@v2
-      - run: java -jar /plantuml.jar design/diagrams/*.plnt
+      - run: java -jar /plantuml.jar docs/final-report/diagrams/*.plnt
       - uses: actions/upload-artifact@v2
         with:
           name: Diagrams
-          path: design/diagrams/*.png
+          path: docs/final-report/diagrams/*.png
