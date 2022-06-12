@@ -48,3 +48,4 @@ But it should be tested whether it's worth doing computation over IO.
 ## Future Work
 1. Provide file overwrite.
 1. Allow using sub-directories ([#7](https://github.com/emranbm/sls-for-iot/issues/7))
+1. Add ability to divide huge files into chunks to be saved in multiple devices.
