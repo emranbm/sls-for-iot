@@ -1,0 +1,23 @@
+---
+name: "Run Simulation"
+on:
+  workflow_dispatch:
+    inputs:
+      case_name:
+        description: Name of simulation case to run. They can be found as proof-of-concept/simulation/cases/*.py files.
+        required: true
+jobs:
+  run-simulation:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run simulation
+        run: ./proof-of-concept/simulation/run-simulation.sh ${{ github.event.inputs.case_name }}
+      - name: Wait for simulation to start up
+        run: sleep 10
+      - name: Measure
+        run: ./proof-of-concept/simulation/measurement/main.py --step 10 --count 30 mn.edge.d1 mn.edge.d2 mn.edge.d3
+      - uses: actions/upload-artifact@v2
+        with:
+          name: measurement-report
+          path: proof-of-concept/simulation/measurement/report.xlsx
