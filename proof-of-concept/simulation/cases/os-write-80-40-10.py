@@ -36,10 +36,9 @@ try:
     time.sleep(5)
 
     exp.get_node(broker).sendCmd("mosquitto -c /mosquitto-no-auth.conf")
-    # -1 below means no storage limit for sharing
-    exp.get_node(devices[0]).sendCmd("node write-by-sdk.js 0.8 -1") # 80% chance of write on each step
-    exp.get_node(devices[1]).sendCmd("node write-by-sdk.js 0.4 -1") # 40% chance of write on each step
-    exp.get_node(devices[2]).sendCmd("node write-by-sdk.js 0.1 -1") # 10% chance of write on each step
+    exp.get_node(devices[0]).sendCmd("node write-by-os.js 0.8") # 80% chance of write on each step
+    exp.get_node(devices[1]).sendCmd("node write-by-os.js 0.4") # 40% chance of write on each step
+    exp.get_node(devices[2]).sendCmd("node write-by-os.js 0.1") # 10% chance of write on each step
     print("Simulation started!")
     sys.stdout.flush()
     while True:
