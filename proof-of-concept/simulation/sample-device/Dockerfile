@@ -15,7 +15,7 @@ RUN mv sls-sdk/ ../../sls-sdk/ && mv sls-types/ ../../sls-types/
 RUN npm install
 COPY . .
 RUN rm -rf sls-sdk/ sls-types/
-RUN npm run build
-RUN cd /sls-sdk/ && rm -rf test/ && node_modules/typescript/bin/tsc \
+RUN cd /sls-sdk/ && rm -rf test/ && npm install && node_modules/typescript/bin/tsc \
     && sed -i 's/"main":.*/"main": "build\/main.js",/g' package.json
+RUN npm run build
 WORKDIR /app/sls-device/build/scenarios/
