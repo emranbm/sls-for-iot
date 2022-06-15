@@ -1,6 +1,9 @@
 import { promisify } from "util";
 import { promises as asyncfs } from "fs";
 import { SlsSdk } from "sls-sdk";
+import { InMemoryFileInfoRepo } from "sls-sdk/src/fileInfoRepo/InMemoryFileInfoRepo";
+import { InMemoryClientRepo } from "sls-sdk/src/clientRepo/InMemoryClientRepo";
+import { FirstFitFreeSpaceFinder } from "sls-sdk/src/freeSpaceFinder/FirstFitFreeSpaceFinder";
 
 const STORAGE_ROOT = './clients-storages'
 
@@ -23,7 +26,13 @@ export class Utils {
 
     public static newSDK() {
         const clientId = Math.random().toString()
-        return new SlsSdk(Utils.BROKER_URL, clientId, Utils.getStorageRootPath(clientId))
+        return new SlsSdk(Utils.BROKER_URL,
+            clientId,
+            Utils.getStorageRootPath(clientId),
+            "info",
+            new InMemoryFileInfoRepo(),
+            new InMemoryClientRepo(),
+            new FirstFitFreeSpaceFinder())
     }
 
     public static async prepareFreshEnvironment(): Promise<SlsSdk> {
