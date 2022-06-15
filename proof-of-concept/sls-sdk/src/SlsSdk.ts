@@ -13,10 +13,10 @@ import { IClientRepository } from "./clientRepo/IClientRepository"
 import { InMemoryClientRepo } from "./clientRepo/InMemoryClientRepo"
 import { Client } from "./clientRepo/Client"
 import { IFreeSpaceFinder } from "./freeSpaceFinder/IFreeSpaceFinder"
-import { FirstFitFreeSpaceFinder } from "./freeSpaceFinder/FirstFitFreeSpaceFinder"
 import { MessageHelper } from "./utils/MessageHelper"
 import { ClientTopics, Topics } from "./utils/Topics"
 import { DeleteError } from './errors/DeleteError';
+import { RandomFreeSpaceFinder } from './freeSpaceFinder/RandomFreeSpaceFinder';
 
 const HEART_BEAT_INTERVAL = 10000
 
@@ -39,7 +39,7 @@ export class SlsSdk {
         logLevel: string = "info",
         fileInfoRepo: IFileInfoRepository = new InMemoryFileInfoRepo(),
         clientRepo: IClientRepository = new InMemoryClientRepo(),
-        freeSpaceFinder: IFreeSpaceFinder = new FirstFitFreeSpaceFinder(),
+        freeSpaceFinder: IFreeSpaceFinder = new RandomFreeSpaceFinder(),
         maxAvailableBytes: number = Number.MAX_VALUE
     ) {
         this.brokerUrl = brokerUrl
