@@ -174,6 +174,8 @@ export class SlsSdk {
         const clientDir = this.getClientDir(msg.clientId)
         await fs.mkdir(clientDir, { recursive: true })
         await fs.writeFile(`${clientDir}/${msg.file.virtualPath}`, msg.file.content)
+        this.maxAvailableBytes -= Buffer.byteLength(msg.file.content, 'utf-8')
+        this.maxAvailableBytes = Math.max(this.maxAvailableBytes, 0)
         this.fileInfoRepo.addFile(msg.clientId, msg.file)
         let respMsg: SaveResponseMsg = {
             clientId: this.clientId,
