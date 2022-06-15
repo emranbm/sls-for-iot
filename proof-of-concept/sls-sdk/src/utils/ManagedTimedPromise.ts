@@ -11,6 +11,8 @@ export class ManagedTimedPromise<T> extends ManagedPromise<T> {
      */
     constructor(timeout: number) {
         super()
+        this.clearTimeout = this.clearTimeout.bind(this)
+        this.onTimeout = this.clearTimeout.bind(this)
         this.timeout = timeout
         this.timeoutId = setTimeout(this.onTimeout, this.timeout)
         this.then(this.clearTimeout, this.clearTimeout)

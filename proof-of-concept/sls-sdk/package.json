@@ -1,7 +1,8 @@
 {
   "name": "sls-sdk",
   "version": "0.1.1",
-  "main": "src/main.ts",
+  "main": "build/main.js",
+  "types": "src/main.ts",
   "scripts": {
     "test": "./node_modules/ts-mocha/bin/ts-mocha -p tsconfig.json test/**/*.test.ts",
     "build": "node_modules/typescript/bin/tsc",
