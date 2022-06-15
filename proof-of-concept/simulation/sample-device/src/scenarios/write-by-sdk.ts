@@ -6,8 +6,6 @@ import { argv } from 'process';
 import { SlsSdk } from 'sls-sdk';
 
 async function main() {
-
-
     const writeChance = argv[2]
     const CONTENT = Array(4097).join("a")
 
@@ -21,9 +19,7 @@ async function main() {
     let index = 0
 
     setInterval(async () => {
-        console.log("Checking chance...")
         if (isChanceMet(writeChance)) {
-            console.log("")
             await sdk.saveFile(CONTENT, index++ + ".txt")
         }
     }, 10_000)
