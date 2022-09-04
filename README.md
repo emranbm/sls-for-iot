@@ -22,7 +22,7 @@ Here's my roadmap to get the project done. It's not fixed and is subject to chan
   - [x] Run FogBed simulation with different scenarios of using SLS
 - [x] Revise the design and implementation, if needed
 - [x] Write down the paper
-- [ ] Create presentation
+- [x] Create presentation
 - [ ] Defend the dissertation
 - [ ] Enjoy the rest of your non-academic life!  
 (Is it going to check ever? I hope so!)
