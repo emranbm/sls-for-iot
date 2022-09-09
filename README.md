@@ -23,7 +23,7 @@ Here's my roadmap to get the project done. It's not fixed and is subject to chan
 - [x] Revise the design and implementation, if needed
 - [x] Write down the paper
 - [x] Create presentation
-- [ ] Defend the dissertation
+- [x] Defend the dissertation
 - [ ] Enjoy the rest of your non-academic life!  
 (Is it going to check ever? I hope so!)
 
