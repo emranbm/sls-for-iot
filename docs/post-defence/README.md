@@ -17,3 +17,5 @@ After defending the dissertation, the below tasks should be done to graduate fro
     1. `تحصیلات تکمیلی`
     1. `درخواست احراز کارشناسی ارشد و دکتری`
     1. and so on...
+1. Ask the correspondings to sign the [faculty checkout form](http://edu.ce.sharif.edu/media_root/forms/tasvieyeh_2.pdf).
+    - Unfortunately, this should be done physically.
