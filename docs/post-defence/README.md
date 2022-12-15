@@ -11,7 +11,7 @@ After defending the dissertation, the below tasks should be done to graduate fro
     1. `امور ثبت نام و ترمیم`
     1. `پرداخت اینترنتی دانشجویان`
     1. and so on...
-1. Send the signed **Declaration**, **Approval sheet**, and **Thesis pdf** to postgraduate office: lashkarian@staff.sharif.edu
+1. Send the signed **Declaration**, **Approval sheet**, and **Thesis pdf** to the postgraduate office: lashkarian@staff.sharif.edu
 1. Send the graduation request
     1. Login to edu.sharif.edu
     1. `تحصیلات تکمیلی`
@@ -19,3 +19,5 @@ After defending the dissertation, the below tasks should be done to graduate fro
     1. and so on...
 1. Ask the correspondings to sign the [faculty checkout form](http://edu.ce.sharif.edu/media_root/forms/tasvieyeh_2.pdf).
     - Unfortunately, this should be done physically.
+    - After getting the signatures, give the for to the postgraduate office.
+1. Make sure you have no negative balance at your [dining account](https://setad.dining.sharif.edu/index/index.rose).
